@@ -1,0 +1,122 @@
+[
+    {
+        "id": 1,
+        "name": "Dr. Alice Anderson",
+        "email": "alice.anderson@university.com",
+        "role": "Doctor",
+        "department": "Cardiology",
+        "phone": "+44 7700 900123",
+        "favColour": "orange",
+        "active": true
+    },
+    {
+        "id": 2,
+        "name": "Prof. Cyrus Sanderson",
+        "email": "cyrus.sanderson@university.com",
+        "role": "Professor",
+        "department": "Neurology",
+        "phone": "+44 7700 900456",
+        "favColour": "red",
+        "active": true
+    },
+    {
+        "id": 3,
+        "name": "Quadruple Prof. Adonis Cnut",
+        "email": "adonis.cnut@ox.ac.uk",
+        "role": "Professor",
+        "department": "Moral Philosophy",
+        "phone": "+44 7700 900789",
+        "favColour": "purple",
+        "active": false
+    },
+    {
+        "id": 4,
+        "name": "Dr. Beatrice Smith",
+        "email": "beatrice.smith@university.com",
+        "role": "Doctor",
+        "department": "Pediatrics",
+        "phone": "+44 7700 900321",
+        "favColour": "red",
+        "active": true
+    },
+    {
+        "id": 5,
+        "name": "Mr. David Johnson",
+        "email": "david.johnson@university.com",
+        "role": "Administrator",
+        "department": "Admissions",
+        "phone": "+44 7700 900654",
+        "favColour": "orange",
+        "active": true
+    },
+    {
+        "id": 6,
+        "name": "Ms. Emily Davis",
+        "email": "emily.davis@rival.com",
+        "role": "Spy",
+        "department": "N/A",
+        "phone": "+44 7700 900987",
+        "favColour": "orange",
+        "active": false
+    },
+    {
+        "id": 7,
+        "name": "Dr Franz Foster",
+        "email": "franz.foster@gloucester.com",
+        "role": "Doctor",
+        "department": "Gloucester Visiting",
+        "phone": "+44 7700 901234",
+        "favColour": "green",
+        "active": true
+    },
+    {
+        "id": 8,
+        "name": "Ms. Grace F. L. Lee",
+        "email": "grace.lee@university.co.uk",
+        "role": "Administrator",
+        "department": "Finance",
+        "phone": "+44 7700 901567",
+        "favColour": "blue",
+        "active": true
+    },
+    {
+        "id": 9,
+        "name": "Mr. Henry Thompson",
+        "email": "henry.thompson@college.ac.uk",
+        "role": "Teacher",
+        "department": "Mathematics",
+        "phone": "+44 7700 901890",
+        "favColour": "purple",
+        "active": false
+    },
+    {
+        "id": 10,
+        "name": "Ms. Isabella Martinez",
+        "email": "isabella.martinez@spain.com",
+        "role": "Visitor",
+        "department": "N/A",
+        "phone": "+34 600 123456",
+        "favColour": "blue",
+        "active": true
+    },
+    {
+        "id": 11,
+        "name": "Prof. Jack Purpleson",
+        "email": "jack.purpleson@purplecollege.ac.uk",
+        "role": "Professor",
+        "department": "Philosophy",
+        "phone": "+44 7700 902345",
+        "favColour": "purple",
+        "active": true
+    },
+    {
+        "id": 99,
+        "name": "Mr John Doe",
+        "email": "N/A",
+        "role": "Guest",
+        "department": "N/A",
+        "phone": "N/A",
+        "favColour": "purple",
+        "active": false
+    }
+]
