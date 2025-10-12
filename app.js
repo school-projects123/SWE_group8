@@ -1,13 +1,6 @@
 // request User ID number first via prompt
-let userId = prompt("Please enter your User ID number (1-5):");
-if (userId === null) {
-    userId = 1; // Default to 1 if cancelled
-} else {
-    userId = parseInt(userId);
-    if (isNaN(userId) || userId < 1 || userId > 5) {
-        userId = 1; // Default to 1 if invalid input
-    }
-}
+let userId = parseInt(prompt("Please enter your User ID number (1-11):")) || 1;
+if (userId < 1 || userId > 11) userId = 1;
 
 // fetch user with ID from userdata.json
 fetch('userdata.json')
@@ -95,7 +88,7 @@ fetch('userdata.json')
                         label: 'Favourite Colours',
                         data: counts,
                         backgroundColor: labels.map(colour => colourBarMap[colour]),
-                        borderColor: labels.map(colour => colourBarMap[colour]+'6'), // Slightly transparent border
+                        borderColor: 'black',
                         borderWidth: 2
                     }]
                 },
