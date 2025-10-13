@@ -27,8 +27,24 @@
     </div>
     <div style="display: flex; flex-direction: column; width: 100%; height: 80%;">
         <div style="display: flex; flex: 1;">
-            <div id="userDiv" style="flex: 1; background-color: lightblue;"></div>
-            <div id="chartDiv" style="flex: 1; background-color: lightgreen;"></div>
+            <div id="topLeft" style="flex: 1; background-color: lightblue;">
+                <div id="colorText" style="text-align: center; font-size: 1.2em; margin: 20px 0;">
+                    This table exemplifies the high quality of the Special Branch.
+                </div>
+                <script>
+                    const colors = ["red", "blue", "green", "purple", "orange", "crimson"];
+                    let idx = 0;
+                    setInterval(() => {
+                        document.getElementById("colorText").style.color = colors[idx % colors.length];
+                        idx++;
+                    }, 100);
+                </script>
+                <div id="userDiv"></div>
+            </div>
+            <div id="topRight" style="flex: 1; background-color: lightgreen;">
+                <h3 style="text-align: center;">Chart Section</h3>
+                <div id="chartDiv"></div>
+            </div>
         </div>
         <div style="display: flex; flex: 1;">
             <div id="anotherDiv" style="flex: 1; background-color: lightcoral;">
