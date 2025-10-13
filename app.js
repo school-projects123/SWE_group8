@@ -3,16 +3,7 @@ let defaultFilename = '21755561_Pretend_Essay_Assignment.xls';
 function processExcelData(arrayBuffer) {
     const data = new Uint8Array(arrayBuffer);
     const workbook = XLSX.read(data, {type: 'array'});
-    const firstSheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[firstSheetName];
-    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-    // Show greeting for user.
-    const user = jsonData.find(u => u.id === 'something');
-    let topBar = document.getElementById('topBar');
-    if (user && topBar) {
-        topBar.innerHTML += `<h2>Hello there!</h2>`;
-    }
+    const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
     // Show the Excel data in a table in the html.
     let userDiv = document.getElementById('userDiv');
@@ -20,15 +11,15 @@ function processExcelData(arrayBuffer) {
         userDiv = document.createElement('div');
         userDiv.id = 'userDiv';
         document.body.appendChild(userDiv);
-    }
-    let table = '<table border="1"><tr><th>LastName</th><th>FirstName</th><th>e-mail</th><th>Turnitin User ID</th><th>Title</th><th>Word Count</th><th>Date Uploaded</th><th>Grade</th><th>Similarity Score</th></tr>';
+    };
+    let table = '<table border="1"><tr><th>Last Name</th><th>First Name</th><th>e-mail</th><th>Turnitin User ID</th><th>Title</th><th>Word Count</th><th>Date Uploaded</th><th>Grade</th><th>Similarity Score</th></tr>';
     jsonData.forEach(user => {
         table += `<tr>
             <td>${user['Last Name'] || ''}</td>
             <td>${user['First Name'] || ''}</td>
-            <td>${user['Email'] || ''}</td>
+            <td>${user.Email || ''}</td>
             <td>${user['Turnitin User ID'] || ''}</td>
-            <td>${user['Title'] || ''}</td>
+            <td>${user.Title || ''}</td>
             <td>${user['Word Count'] || ''}</td>
             <td>${user['Date Uploaded'] || ''}</td>
             <td>${user.Grade || ''}</td>
@@ -54,7 +45,7 @@ function processExcelData(arrayBuffer) {
     const maxScore = Math.max(...scores);
     const minScore = Math.min(...scores);
 
-    const backgroundColors = scores.map(score => {
+    const backgroundColours = scores.map(score => {
         if (score === maxScore) return 'green';
         if (score === minScore) return 'red';
         return 'yellow';
@@ -68,7 +59,7 @@ function processExcelData(arrayBuffer) {
                 datasets: [{
                     label: 'User Scores',
                     data: scores,
-                    backgroundColor: backgroundColors,
+                    backgroundColor: backgroundColours,
                     borderColor: 'black',
                     borderWidth: 2
                 }]
