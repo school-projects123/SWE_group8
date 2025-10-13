@@ -1,27 +1,26 @@
-// request User ID number first via prompt
-let userId = parseInt(prompt("Please enter your User ID number (1-11):")) || 1;
+let userId = parseInt(prompt("Please enter your User ID number (1-11):")) || 1; // Get userID, default to 1
 if (userId < 1 || userId > 11) userId = 1;
 
-// fetch user with ID from userdata.json
+// Fetch userdata.json just once to make things efficient.
 fetch('userdata.json')
-    .then(response => response.json())
-    .then(data => {
-        const user = data.find(u => u.id === userId);
-        if (!user) return;
-        let topBar = document.getElementById('topBar');
-        if (!topBar) {
-            topBar = document.createElement('div');
-            topBar.id = 'topBar';
-            document.body.prepend(topBar);
-        }
-        topBar.innerHTML = `<h2>Hello, ${user.name}!</h2>`;
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
     })
-    .catch(error => console.error('Error fetching user data:', error));
-
-// show the userdata.json in a table in the html
-fetch('userdata.json')
-    .then(response => response.json())
     .then(data => {
+        // Show greeting for user.
+        const user = data.find(u => u.id === userId);
+        if (user) {
+            let topBar = document.getElementById('topBar');
+            if (!topBar) {
+                topBar = document.createElement('div');
+                topBar.id = 'topBar';
+                document.body.prepend(topBar);
+            }
+            topBar.innerHTML = `<h2>Hello, ${user.name}!</h2>`;
+        }
+
+        // Show the userdata.json in a table in the html.
         let userDiv = document.getElementById('userDiv');
         if (!userDiv) {
             userDiv = document.createElement('div');
@@ -34,22 +33,8 @@ fetch('userdata.json')
         });
         table += '</table>';
         userDiv.innerHTML = table;
-    })
-    .catch(error => console.error('Error fetching user data:', error));
 
-// Ensure Chart.js is loaded before using it
-function loadChartJs(callback) {
-    if (window.Chart) return callback();
-    const script = document.createElement('script');
-    script.src = 'Chart.js';
-    script.onload = callback;
-    document.head.appendChild(script);
-}
-
-// Show a bar chart to plot their favourite colours as example data
-fetch('userdata.json')
-    .then(response => response.json())
-    .then(data => {
+        // Show a bar chart to plot their favourite colours as example data.
         const colourCounts = {};
         const colourBarMap = {};
         for (const {favColour:colour} of data) {
@@ -85,3 +70,12 @@ fetch('userdata.json')
         });
     })
     .catch(error => console.error('Error fetching user data:', error));
+
+// Ensure Chart.js is loaded before using it.
+function loadChartJs(callback) {
+    if (window.Chart) return callback();
+    const script = document.createElement('script');
+    script.src = 'Chart.js';
+    script.onload = callback;
+    document.head.appendChild(script);
+}
