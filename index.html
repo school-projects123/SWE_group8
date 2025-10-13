@@ -13,7 +13,18 @@
     </div>
     <script src="app.js"></script>
     <noscript>Please enable Javascript to run this app.</noscript>
-    <div id="topBar" style="display: flex; width: 100%; background-color: lightgray;"></div>
+    <div id="topBar" style="display: flex; width: 100%; background-color: lightgray;">
+        <div style="flex: 1; text-align: center; padding: 5px;">
+            <label for="fileInput">Enter filename (or leave blank for default): </label>
+            <input type="text" id="fileInput" placeholder="21755561_Pretend_Essay_Assignment.xls">
+            <button id="loadButton">Load Data</button>
+        </div>
+        <div style="flex: 1; text-align: center; padding: 5px;">
+            <label for="uploadInput">Or select a file: </label>
+            <input type="file" id="uploadInput" style="display:none;">
+            <button id="browseButton" onclick="document.getElementById('uploadInput').click();">Browse...</button>
+        </div>
+    </div>
     <div style="display: flex; flex-direction: column; width: 100%; height: 80%;">
         <div style="display: flex; flex: 1;">
             <div id="userDiv" style="flex: 1; background-color: lightblue;"></div>
@@ -38,9 +49,12 @@
                     And death shall be no more; death, thou shalt die. - John Donne</p>
             </div>
             <div id="fourthDiv" style="flex: 1; background-color: lightyellow;">
-                <h3>Example Text</h3>
-                <p>Filler text (also placeholder text or dummy text) is text that shares some characteristics of a real written text, but is random or otherwise generated. It may be used to display a sample of fonts, generate text for testing, or to spoof an e-mail spam filter. The process of using filler text is sometimes called greeking, although the text itself may be nonsense, or largely Latin, as in Lorem ipsum. ASDF is the sequence of letters that appear on the first four keys on the home row of a QWERTY or QWERTZ keyboard. They are often used as a sample or test case or as random, meaningless nonsense. It is also a common learning tool for keyboard classes, since all four keys are located on the home row. "Etaoin shrdlu" is the approximate order of frequency of the twelve most commonly used letters in the English language, best known as a nonsense phrase that sometimes appeared in print in the days of "hot type" publishing due to a custom of Linotype machine operators. - Wikipedia</p>
-                <p>Some more text.</p>
+                <h3>Explanatory Text</h3>
+                <p>As per this commit the example data has been substituted for some of the data from the folder. It can read it into a table, and create a table.</p>
+                <p>It reads the xlsx file, and as well as the aforementioned table, it also creates a chart from the data, where the scores are shown with bars, the highest score in green, lowest in red, and the rest in yellow.</p>
+                <p>In order to reference the old app file, you can check the git history.</p>
+                <p>At present this is entirely a proof of concept and will not work with any differently formatted data, different column names, or pretty much anything else.</p>
+                <p>Note: if you typed something into the prompt and it showed nothing, refresh the page and either press enter (so it uses the default) or copy and paste '21755561_Pretend_Essay_Assignment.xls' into the prompt. You can also try 'gc_PS5906_25_SANDPIT_fullgc_2025-10-07-13-12-38.xls' to compare.</p>
             </div>
         </div>
     </div>
