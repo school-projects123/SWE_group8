@@ -7,15 +7,14 @@ fetch('userdata.json')
     .then(response => response.json())
     .then(data => {
         const user = data.find(u => u.id === userId);
-        if (user) {
-            let topBar = document.getElementById('topBar');
-            if (!topBar) {
-                topBar = document.createElement('div');
-                topBar.id = 'topBar';
-                document.body.prepend(topBar);
-            }
-            topBar.innerHTML = `<h2>Hello, ${user.name}!</h2>`;
+        if (!user) return;
+        let topBar = document.getElementById('topBar');
+        if (!topBar) {
+            topBar = document.createElement('div');
+            topBar.id = 'topBar';
+            document.body.prepend(topBar);
         }
+        topBar.innerHTML = `<h2>Hello, ${user.name}!</h2>`;
     })
     .catch(error => console.error('Error fetching user data:', error));
 
@@ -40,62 +39,47 @@ fetch('userdata.json')
 
 // Ensure Chart.js is loaded before using it
 function loadChartJs(callback) {
-    if (typeof Chart === 'undefined') {
-        const script = document.createElement('script');
-        script.src = 'Chart.js';
-        script.onload = callback;
-        document.head.appendChild(script);
-    } else {
-        callback();
-    }
+    if (window.Chart) return callback();
+    const script = document.createElement('script');
+    script.src = 'Chart.js';
+    script.onload = callback;
+    document.head.appendChild(script);
 }
 
 // Show a bar chart to plot their favourite colours as example data
 fetch('userdata.json')
     .then(response => response.json())
     .then(data => {
-        // Count occurrences of each favourite colour
         const colourCounts = {};
         const colourBarMap = {};
-        data.forEach(user => {
-            const colour = user.favColour;
-            if (colour) {
+        for (const {favColour:colour} of data) {
+            if (!colour) continue;
             colourCounts[colour] = (colourCounts[colour] || 0) + 1;
-            colourBarMap[colour] = colour; // Map label to its colour
-            }
-        });
-        // Prepare data for Chart.js
+            colourBarMap[colour] = colour;
+        }
         const labels = Object.keys(colourCounts);
         const counts = Object.values(colourCounts);
-        // Create a canvas element for the chart inside the div
-        let chartDiv = document.getElementById('chartDiv');
-        if (!chartDiv) {
-            chartDiv = document.createElement('div');
-            chartDiv.id = 'chartDiv';
-            document.body.appendChild(chartDiv);
-        }
-        const canvas = document.createElement('canvas');
-        canvas.id = 'favColourChart';
+        const chartDiv = document.getElementById('chartDiv') || Object.assign(
+            document.body.appendChild(document.createElement('div')),
+            {id: 'chartDiv'}
+        );
+        const canvas = Object.assign(document.createElement('canvas'), {id:'favColourChart'});
         chartDiv.appendChild(canvas);
-
-        // Load Chart.js and render the bar chart
         loadChartJs(() => {
             new Chart(canvas, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [{
                         label: 'Favourite Colours',
                         data: counts,
-                        backgroundColor: labels.map(colour => colourBarMap[colour]),
+                        backgroundColor: labels.map(c => colourBarMap[c]),
                         borderColor: 'black',
                         borderWidth: 2
                     }]
                 },
                 options: {
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
+                    scales: {y:{beginAtZero:true}}
                 }
             });
         });
