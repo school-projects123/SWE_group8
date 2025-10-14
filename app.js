@@ -29,7 +29,7 @@ function processExcelData(arrayBuffer) {
     table += '</table>';
     userDiv.innerHTML = table;
 
-    // Show a bar chart to plot each user and their score, colour top scorers green, worst red.
+    // Show a bar chart to plot each user and their score, colour top scorers green, and worst red.
     const chartDiv = document.getElementById('chartDiv') || Object.assign(
         document.body.appendChild(document.createElement('div')),
         {id: 'chartDiv'}
@@ -105,7 +105,7 @@ function loadData(filename) {
     });
 }
 
-// Setup event listeners for top bar
+// Setup event listeners for topBar (for loading files in)
 window.addEventListener('DOMContentLoaded', () => {
     const loadButton = document.getElementById('loadButton');
     if (loadButton) {
@@ -121,8 +121,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (filename) loadData(filename);
         });
     }
-    // Optionally, load default data on page load
-    loadData(defaultFilename);
+    loadData(defaultFilename); // either way this loads the default data on first load
 });
 
 // Ensure Chart.js is loaded before using it.

@@ -32,10 +32,10 @@
                     This table exemplifies the high quality of the Special Branch.
                 </div>
                 <script>
-                    const colors = ["red", "blue", "green", "purple", "orange", "crimson"];
+                    const colours = ["red", "blue", "green", "purple", "orange", "crimson"];
                     let idx = 0;
                     setInterval(() => {
-                        document.getElementById("colourText").style.color = colors[idx % colors.length];
+                        document.getElementById("colourText").style.color = colours[idx % colours.length];
                         idx++;
                     }, 100);
                 </script>
@@ -66,11 +66,10 @@
             </div>
             <div id="fourthDiv" style="flex: 1; background-color: lightyellow;">
                 <h3>Explanatory Text</h3>
-                <p>As per this commit the example data has been substituted for some of the data from the folder. It can read it into a table, and create a table.</p>
-                <p>It reads the xlsx file, and as well as the aforementioned table, it also creates a chart from the data, where the scores are shown with bars, the highest score in green, lowest in red, and the rest in yellow.</p>
-                <p>In order to reference the old app file, you can check the git history.</p>
-                <p>At present this is entirely a proof of concept and will not work with any differently formatted data, different column names, or pretty much anything else.</p>
-                <p>Note: if you typed something into the prompt and it showed nothing, refresh the page and either press enter (so it uses the default) or copy and paste '21755561_Pretend_Essay_Assignment.xls' into the prompt. You can also try 'gc_PS5906_25_SANDPIT_fullgc_2025-10-07-13-12-38.xls' to compare.</p>
+                <p>As per this version of the special branch the data from the xls(x) files can be read in by the javascript, which creates a table and a chart from the data (shown in this web-page), where the scores are shown with bars, the highest score in green, lowest in red, and the rest in yellow.</p>
+                <p>In order to reference the old app file and sample data, you can check the git history.</p>
+                <p>At present this is entirely a proof of concept and will not work with any differently formatted data, different column names, or pretty much anything else. However if another file shares column names with the sample data any matching columns will be used.</p>
+                <p>Note: if you typed something into the prompt and it showed nothing, press enter in the text box (so it uses the default) or copy and paste '21755561_Pretend_Essay_Assignment.xls' into the prompt. You can also try 'gc_PS5906_25_SANDPIT_fullgc_2025-10-07-13-12-38.xls' to compare.</p>
             </div>
         </div>
     </div>
