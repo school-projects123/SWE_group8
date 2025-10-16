@@ -11,7 +11,7 @@ function processExcelData(arrayBuffer) {
         userDiv = document.createElement('div');
         userDiv.id = 'userDiv';
         document.body.appendChild(userDiv);
-    };
+    }
     let table = '<table border="1"><tr><th>Last Name</th><th>First Name</th><th>e-mail</th><th>Turnitin User ID</th><th>Title</th><th>Word Count</th><th>Date Uploaded</th><th>Grade</th><th>Similarity Score</th></tr>';
     jsonData.forEach(user => {
         table += `<tr>
