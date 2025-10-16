@@ -1,3 +1,5 @@
-# SWE - Group 8
+# SWE_group8
+Principles of Software Engineering Project...
+Blackboard Analysis Tool
 
 Principles of Software Engineering Project... Blackboard Analysis Tool
