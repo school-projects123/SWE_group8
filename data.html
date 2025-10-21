@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="style.css">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Branch - Data Upload</title>
+</head>
+
+<body>
+    <div id="header" style="text-align: center; background-color:crimson; padding: 2px;">
+        <h1>Special Branch - Data Upload.</h1>
+    </div>
+    <div class="display" style="height: 80%; width: 100%; flex: 1; background-color: lightblue;">
+        <div style="display: flex; width: 100%; height: 100%;">
+            <div style="width: 20%; background-color: #f2f2f2; padding: 20px; box-sizing: border-box;">
+                <h2>Sidebar Menu</h2>
+                <a href="/data.html" target="_blank">Spreadsheet Upload</a><br>
+                <a href="/spreadsheet.html" target="_blank">Spreadsheet View</a><br>
+                <a href="/analytics.html" target="_blank">Analytics Report Page</a><br>
+            </div>
+            <div style="width: 80%; background-color: coral; padding: 20px; box-sizing: border-box;">
+                <h2>Upload Data</h2>
+                <div style="background-color: aliceblue;">
+                    <div class="display" style="display: flex; width: 100%; height: 10%;">
+                        <div style="width: 32%; background-color: antiquewhite;">
+                            Tab1
+                        </div>
+                        <div style="width: 32%; background-color: thistle;">
+                            Tab2
+                        </div>
+                        <div style="width: 32%; background-color: grey;">
+                            Tab3
+                        </div>
+                        <div style="width: 4%; background-color: darkblue;">
+                            <p style="color: white; text-align: center; margin: 0;">+</p>
+                        </div>
+                    </div>
+                    <div style="height: 2px; padding: 50px; margin-top: 0;">
+                        <div style="width: 98%; background-color: antiquewhite;">
+                            <p style="margin: 0; padding: 10px;">[#] UploadedFile.xlsx</p>
+                        </div>
+                        <div style="width: 98%; background-color: grey;">
+                            <p style="margin: 0; padding: 10px;">[#] AnotherFile.xlsx</p>
+                        </div>
+                        <div style="width: 98%; background-color: antiquewhite;">
+                            <p style="margin: 0; padding: 10px;">[#] SomeotherFile.xls</p>
+                        </div>
+                    </div>
+                    <br><br><br><br>
+                    <h3>Upload more</h3>
+                    <form>
+                        <label for="fileUpload">Select spreadsheet to upload:</label><br>
+                        <input type="file" id="fileUpload" name="fileUpload" accept=".xls,.xlsx,.csv"><br><br>
+                        <input type="submit" value="Upload">
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div id="bottomBar" style="display: flex; width: 100%; background-color: lightgray;">
+        <div style="flex: 1; text-align: center; padding: 10px;">
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; gap: 20px;">
+            <li><a href="/data.html" target="_blank">Spreadsheet Upload</a></li>
+            <li><a href="/spreadsheet.html" target="_blank">Spreadsheet View</a></li>
+            <li><a href="/analytics.html" target="_blank">Analytics Report Page</a></li>
+            <li><a href="https://github.com/school-projects123/SWE_group8" target="_blank">GitHub Repository</a> <a href="https://github.com/school-projects123/SWE_group8/tree/Special-Branch" target="_blank">(Special Branch)</a></li>
+            <li><a href="https://www.youtube.com/watch?v=-TwZvx00BAM" target="_blank">Valuable life advice</a></li>
+            </ul>
+            <div style="margin-top: 8px; font-size: 0.9em; color: #333;">
+                All rights reserved. By who, I do not know.
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
