@@ -8,7 +8,7 @@ Principles of Software Engineering Project
 Principles of Software Engineering: Group Project.
 Scrum Master: Folami
 Product Onwer: Kayma
-Team: Dariia, Nic, Crystal
+Team: Dariia, Nic, Crystal, Gillian
 >>>>>>> Stashed changes
 =======
 Principles of Software Engineering Project...
