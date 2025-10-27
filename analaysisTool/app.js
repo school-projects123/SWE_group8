@@ -140,3 +140,105 @@ function loadXlsxJs(callback) {
     script.onload = callback;
     document.head.appendChild(script);
 }
+
+function plotWordCountVsScoreFromTable() {
+    const table = document.querySelector('#userDiv table');
+    if (!table) return;
+
+    const rows = Array.from(table.rows).slice(1); // skip header
+    const points = [];
+    const labels = [];
+
+    rows.forEach(row => {
+        const wordCell = row.cells[5];
+        const gradeCell = row.cells[7];
+        const firstCell = row.cells[1];
+        const lastCell = row.cells[0];
+
+        if (!wordCell || !gradeCell) return;
+
+        const wordText = wordCell.textContent.trim().replace(/,/g, '');
+        const gradeText = gradeCell.textContent.trim().replace(/,/g, '');
+
+        const wordNum = parseFloat(wordText);
+        const gradeNum = parseFloat(gradeText);
+
+        if (!isNaN(wordNum) && !isNaN(gradeNum)) {
+            points.push({ x: wordNum, y: gradeNum });
+            labels.push(`${firstCell ? firstCell.textContent.trim() : ''} ${lastCell ? lastCell.textContent.trim() : ''}`.trim());
+        }
+    });
+
+    const innerDiv = document.getElementById('innerDiv') || Object.assign(
+        document.body.appendChild(document.createElement('div')),
+        { id: 'innerDiv' }
+    );
+    innerDiv.innerHTML = ''; // clear previous
+    const canvas = Object.assign(document.createElement('canvas'), { id: 'wordcountScoreChart' });
+    innerDiv.appendChild(canvas);
+
+    if (points.length === 0) {
+        innerDiv.appendChild(document.createTextNode('No valid Word Count / Score pairs to plot.'));
+        return;
+    }
+
+    loadChartJs(() => {
+        new Chart(canvas, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Word Count vs Score',
+                    data: points,
+                    backgroundColor: 'rgba(54, 162, 235, 0.9)',
+                    borderColor: 'rgba(0,0,0,0.6)',
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Word Count' },
+                        beginAtZero: true
+                    },
+                    y: {
+                        title: { display: true, text: 'Score' },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                const lbl = labels[idx] || '';
+                                const x = context.raw.x;
+                                const y = context.raw.y;
+                                return lbl ? `${lbl}: (${x}, ${y})` : `(${x}, ${y})`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+}
+
+// Watch for the main user-score chart being created and trigger the wordcount vs score plot.
+// Use a dataset flag on the main canvas so we re-create the plot each time the main chart is rebuilt.
+const userChartObserver = new MutationObserver(() => {
+    const mainCanvas = document.getElementById('userScoreChart');
+    if (mainCanvas && !mainCanvas.dataset.wordcountPlotted) {
+        plotWordCountVsScoreFromTable();
+        mainCanvas.dataset.wordcountPlotted = '1';
+    }
+});
+
+userChartObserver.observe(document.body, { childList: true, subtree: true });
+
+// If the chart already exists at script load (e.g. on a late include), plot immediately.
+const existing = document.getElementById('userScoreChart');
+if (existing && !existing.dataset.wordcountPlotted) {
+    plotWordCountVsScoreFromTable();
+    existing.dataset.wordcountPlotted = '1';
+}
