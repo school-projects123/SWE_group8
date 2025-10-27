@@ -189,21 +189,15 @@ function plotWordCountVsScoreFromTable() {
                 datasets: [{
                     label: 'Word Count vs Score',
                     data: points,
-                    backgroundColor: 'rgba(54, 162, 235, 0.9)',
+                    backgroundColor: 'rgba(78, 78, 78, 0.9)',
                     borderColor: 'rgba(0,0,0,0.6)',
                     pointRadius: 6
                 }]
             },
             options: {
                 scales: {
-                    x: {
-                        title: { display: true, text: 'Word Count' },
-                        beginAtZero: true
-                    },
-                    y: {
-                        title: { display: true, text: 'Score' },
-                        beginAtZero: true
-                    }
+                    x: { title: {display: true, text: 'Word Count'}, beginAtZero: true },
+                    y: { title: {display: true, text: 'Score'},beginAtZero: true }
                 },
                 plugins: {
                     legend: { display: false },
