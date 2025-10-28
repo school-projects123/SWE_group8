@@ -1,12 +1,16 @@
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  const [showSuccess, setShowSuccess] = useState(false);
+
   function showLoading() {
     setLoading(true);
     setProgress(50);
+    setShowSuccess(false);
     setTimeout(() => {
       setProgress(100);
       setLoading(false);
+      setShowSuccess(true);
     }, 1000);
   }
   async function parseFile(fileObj) {
@@ -45,6 +49,7 @@ export default function FileUploader() {
           <progress value={progress} max="100" />
         </div>
       )}
+      {showSuccess && <div>Done! Files uploaded.</div>}
       <ul>
         {selectedFiles.map((file, idx) => (
           <li key={idx}>
