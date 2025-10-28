@@ -49,7 +49,7 @@ export default function FileUploader() {
       background: 'none',
     }}>
       <div style={{
-        background: '#fff',
+        background: '#e5e7eb',
         borderRadius: '18px',
         boxShadow: '0 4px 32px rgba(0,0,0,0.10)',
         padding: '48px 40px',
@@ -90,7 +90,7 @@ export default function FileUploader() {
         }}
         onMouseEnter={e => e.currentTarget.style.background = '#444'}
         onMouseLeave={e => e.currentTarget.style.background = '#222'}>
-          Show Loading
+          Upload Files
         </button>
         {loading && (
           <div style={{margin:'18px 0'}}>
@@ -101,8 +101,18 @@ export default function FileUploader() {
         {showSuccess && <div style={{color:'#16a34a',margin:'16px 0', fontWeight:500}}>Done! Files uploaded.</div>}
         <ul style={{textAlign:'left',padding:0,listStyle:'none', marginTop:'18px'}}>
           {selectedFiles.map((file, idx) => (
-            <li key={idx} style={{marginBottom:'10px',display:'flex',justifyContent:'space-between',alignItems:'center', background:'#f3f4f6', borderRadius:'6px', padding:'8px 12px'}}>
-              <span style={{overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'70%'}}>{file.name}</span>
+            <li key={idx} style={{
+              marginBottom:'10px',
+              display:'flex',
+              justifyContent:'space-between',
+              alignItems:'center',
+              background:'#e5e7eb',
+              borderRadius:'6px',
+              padding:'10px 14px',
+              color:'#222',
+              fontWeight:500
+            }}>
+              <span style={{overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'70%', color:'#222'}}>{file.name}</span>
               <button onClick={() => removeFile(idx)} style={{marginLeft:'12px', background:'#e11d48', color:'#fff', border:'none', borderRadius:'5px', padding:'4px 12px', cursor:'pointer'}}>Remove</button>
             </li>
           ))}
