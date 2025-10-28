@@ -6,8 +6,15 @@ export default function FileUploader() {
   const [progress, setProgress] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [warn, setWarn] = useState("");
 
   function showLoading() {
+    if (selectedFiles.length === 0) {
+      setWarn("You have not selected any files.");
+      setTimeout(() => setWarn(""), 2000);
+      return;
+    }
+    setWarn("");
     setLoading(true);
     setProgress(50);
     setShowSuccess(false);
@@ -77,7 +84,7 @@ export default function FileUploader() {
           <input type="file" multiple onChange={handleFileSelect} style={{display:'none'}} />
         </label>
         <button onClick={showLoading} style={{
-          background:'#222',
+          background:'#2563eb',
           color:'#fff',
           border:'none',
           borderRadius:'8px',
@@ -86,12 +93,14 @@ export default function FileUploader() {
           fontWeight:600,
           marginBottom:'20px',
           cursor:'pointer',
+          boxShadow:'0 2px 8px rgba(37,99,235,0.08)',
           transition:'background 0.2s',
         }}
-        onMouseEnter={e => e.currentTarget.style.background = '#444'}
-        onMouseLeave={e => e.currentTarget.style.background = '#222'}>
+        onMouseEnter={e => e.currentTarget.style.background = '#1d4ed8'}
+        onMouseLeave={e => e.currentTarget.style.background = '#2563eb'}>
           Upload Files
         </button>
+        {warn && <div style={{color:'#e11d48',marginBottom:'12px',fontWeight:500}}>{warn}</div>}
         {loading && (
           <div style={{margin:'18px 0'}}>
             <div style={{fontWeight:500, color:'#2563eb'}}>Loading... {progress}%</div>
