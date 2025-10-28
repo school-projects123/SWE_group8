@@ -33,12 +33,15 @@ export default function FileUploader() {
   function handleFileSelect(e) {
     const fileList = e.target.files;
     if (!fileList || fileList.length === 0) return;
-    const files = Array.from(fileList).map(f => ({
-      file: f,
-      name: f.name,
-      size: (f.size / 1024).toFixed(1) + " KB",
-      type: f.name.endsWith('.csv') ? 'CSV' : f.name.endsWith('.xlsx') || f.name.endsWith('.xls') ? 'Excel' : 'Unknown'
-    }));
+    const allowed = [".csv", ".xls", ".xlsx"];
+    const files = Array.from(fileList)
+      .filter(f => allowed.some(ext => f.name.toLowerCase().endsWith(ext)))
+      .map(f => ({
+        file: f,
+        name: f.name,
+        size: (f.size / 1024).toFixed(1) + " KB",
+        type: f.name.endsWith('.csv') ? 'CSV' : 'Excel'
+      }));
     setSelectedFiles(prev => [...prev, ...files]);
     e.target.value = '';
   }
