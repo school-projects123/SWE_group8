@@ -16,10 +16,20 @@ export default function FileUploader() {
     e.target.value = '';
   }
 
+  function removeFile(index) {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  }
+
   return (
     <div>
       <input type="file" multiple onChange={handleFileSelect} />
-      <div>FileUploader</div>
+      <ul>
+        {selectedFiles.map((file, idx) => (
+          <li key={idx}>
+            {file.name} <button onClick={() => removeFile(idx)}>Remove</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
