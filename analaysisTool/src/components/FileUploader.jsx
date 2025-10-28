@@ -1,3 +1,14 @@
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  function showLoading() {
+    setLoading(true);
+    setProgress(50);
+    setTimeout(() => {
+      setProgress(100);
+      setLoading(false);
+    }, 1000);
+  }
   async function parseFile(fileObj) {
     // fake parse for now, real logic later
     return { filename: fileObj.name, data: [] };
@@ -27,6 +38,13 @@ export default function FileUploader() {
   return (
     <div>
       <input type="file" multiple onChange={handleFileSelect} />
+      <button onClick={showLoading}>Show Loading</button>
+      {loading && (
+        <div>
+          <div>Loading... {progress}%</div>
+          <progress value={progress} max="100" />
+        </div>
+      )}
       <ul>
         {selectedFiles.map((file, idx) => (
           <li key={idx}>
