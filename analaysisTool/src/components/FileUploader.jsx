@@ -1,3 +1,7 @@
+  async function parseFile(fileObj) {
+    // fake parse for now, real logic later
+    return { filename: fileObj.name, data: [] };
+  }
 import React, { useState } from "react";
 
 export default function FileUploader() {
