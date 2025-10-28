@@ -1,7 +1,11 @@
+
+import React, { useState } from "react";
+
+export default function FileUploader() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   function showLoading() {
     setLoading(true);
@@ -13,14 +17,11 @@
       setShowSuccess(true);
     }, 1000);
   }
+
   async function parseFile(fileObj) {
     // fake parse for now, real logic later
     return { filename: fileObj.name, data: [] };
   }
-import React, { useState } from "react";
-
-export default function FileUploader() {
-  const [selectedFiles, setSelectedFiles] = useState([]);
 
   function handleFileSelect(e) {
     const fileList = e.target.files;
