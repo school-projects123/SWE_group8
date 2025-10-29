@@ -67,33 +67,44 @@ export default function FileUploader() {
 
   return (
     <div style={{
-      minHeight: '80vh',
-      background: 'none',
+      minHeight: '100vh',
+      width: '100vw',
+      background: '#22304a', // slightly darker blue
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      zIndex: -1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
     }}>
-      <header style={{
-        width: '100%',
-        textAlign: 'center',
-        marginTop: '40px',
-        marginBottom: '28px',
-        outline: 'none',
-      }} tabIndex={0} aria-label="Analysis Tool main heading">
-        <h1 style={{
-          fontSize: '3rem',
-          fontWeight: 900,
-          fontFamily: 'Inter, Segoe UI, Arial, sans-serif',
-          letterSpacing: '-2px',
-          margin: 0,
-          color: '#fff',
-          textShadow: '0 2px 12px rgba(0,0,0,0.18)',
-          lineHeight: 1.08,
-        }}>Analysis Tool</h1>
-      </header>
       <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
         width: '100%',
+        maxWidth: '700px',
+        margin: '0 auto',
+        marginTop: '80px', // push down from nav
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}>
+        <header style={{
+          width: '100%',
+          textAlign: 'center',
+          marginBottom: '28px',
+          outline: 'none',
+        }} tabIndex={0} aria-label="Analysis Tool main heading">
+          <h1 style={{
+            fontSize: '3rem',
+            fontWeight: 900,
+            fontFamily: 'Inter, Segoe UI, Arial, sans-serif',
+            letterSpacing: '-2px',
+            margin: 0,
+            color: '#fff',
+            textShadow: '0 2px 12px rgba(0,0,0,0.18)',
+            lineHeight: 1.08,
+          }}>Analysis Tool</h1>
+        </header>
         <div style={{
           background: '#e5e7eb',
           borderRadius: '18px',
@@ -130,7 +141,7 @@ export default function FileUploader() {
             <input type="file" multiple onChange={handleFileSelect} style={{display:'none'}} />
           </label>
           <button onClick={showLoading} style={{
-            background:'#1e40af', // darker blue
+            background:'#19306a', // even darker blue
             color:'#fff',
             border:'none',
             borderRadius:'8px',
@@ -142,8 +153,8 @@ export default function FileUploader() {
             boxShadow:'0 2px 8px rgba(37,99,235,0.08)',
             transition:'background 0.2s',
           }}
-          onMouseEnter={e => e.currentTarget.style.background = '#1e293b'}
-          onMouseLeave={e => e.currentTarget.style.background = '#1e40af'}>
+          onMouseEnter={e => e.currentTarget.style.background = '#14204a'}
+          onMouseLeave={e => e.currentTarget.style.background = '#19306a'}>
             Upload Files
           </button>
           {warn && <div style={{color:'#e11d48',marginBottom:'12px',fontWeight:500}}>{warn}</div>}
