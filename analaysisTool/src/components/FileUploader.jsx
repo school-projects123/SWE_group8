@@ -70,10 +70,6 @@ export default function FileUploader() {
       minHeight: '100vh',
       width: '100vw',
       background: '#22304a', // slightly darker blue
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      zIndex: -1,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -87,6 +83,7 @@ export default function FileUploader() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        zIndex: 1, // ensure above background
       }}>
         <header style={{
           width: '100%',
