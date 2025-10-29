@@ -69,21 +69,21 @@ export default function FileUploader() {
     <div style={{
       minHeight: '100vh',
       width: '100vw',
-      background: '#22304a', // slightly darker blue
+      background: '#22304a',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-start', // move content up
     }}>
       <div style={{
         width: '100%',
         maxWidth: '700px',
         margin: '0 auto',
-        marginTop: '80px', // push down from nav
+        marginTop: '40px', // less margin to move up
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        zIndex: 1, // ensure above background
+        zIndex: 1,
       }}>
         <header style={{
           width: '100%',
