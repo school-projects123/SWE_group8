@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 export default function FileUploader() {
   const [loading, setLoading] = useState(false);
@@ -6,6 +6,7 @@ export default function FileUploader() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [warn, setWarn] = useState("");
+  const inputRef = useRef(null);
 
   function showLoading() {
     if (selectedFiles.length === 0) {
@@ -100,7 +101,7 @@ export default function FileUploader() {
             color: '#fff',
             textShadow: '0 2px 12px rgba(0,0,0,0.18)',
             lineHeight: 1.08,
-          }}>Analysis Tool</h1>
+          }}>Student Analysis Tool</h1>
         </header>
         <div style={{
           background: '#e5e7eb',
@@ -112,11 +113,11 @@ export default function FileUploader() {
           width: '480px',
           textAlign: 'center',
         }}>
-          <h2 style={{marginTop:0, fontSize:'2rem', fontWeight:600, color:'#222'}}>Upload your files</h2>
+          <h2 style={{ marginTop: 0, fontSize: '2rem', fontWeight: 600, color: '#222' }}>Upload your files</h2>
           <p style={{
-            color:'#111',
-            fontSize:'1.08rem',
-            marginBottom:'28px',
+            color: '#111',
+            fontSize: '1.08rem',
+            marginBottom: '28px',
             fontWeight: 700,
             letterSpacing: '-0.2px',
             textShadow: '0 2px 8px rgba(0,0,0,0.10)'
@@ -131,52 +132,64 @@ export default function FileUploader() {
             marginBottom: '24px',
             transition: 'border 0.2s',
           }}
-          onMouseEnter={e => e.currentTarget.style.borderColor = '#2563eb'}
-          onMouseLeave={e => e.currentTarget.style.borderColor = '#b6b6b6'}>
-            <div style={{fontSize:'1.1rem', color:'#222', marginBottom:'8px'}}>Click to select files</div>
-            <div style={{fontSize:'0.95rem', color:'#888'}}>CSV, XLS, XLSX supported</div>
-            <input type="file" multiple onChange={handleFileSelect} style={{display:'none'}} />
+            onMouseEnter={e => e.currentTarget.style.borderColor = '#2563eb'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = '#b6b6b6'}>
+            <div style={{ fontSize: '1.1rem', color: '#222', marginBottom: '8px' }}>Click to select files</div>
+            <div style={{ fontSize: '0.95rem', color: '#888' }}>CSV, XLS, XLSX supported</div>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              accept=".csv,.xls,.xlsx"
+              onChange={handleFileSelect}
+              style={{ display: 'none' }} />
           </label>
-          <button onClick={showLoading} style={{
-            background:'#19306a', // even darker blue
-            color:'#fff',
-            border:'none',
-            borderRadius:'8px',
-            padding:'12px 32px',
-            fontSize:'1rem',
-            fontWeight:600,
-            marginBottom:'20px',
-            cursor:'pointer',
-            boxShadow:'0 2px 8px rgba(37,99,235,0.08)',
-            transition:'background 0.2s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = '#14204a'}
-          onMouseLeave={e => e.currentTarget.style.background = '#19306a'}>
+          <button
+            onClick={() => {
+              inputRef.current?.click();
+              if (selectedFiles.length > 0) showLoading();
+            }}
+
+            style={{
+              background: '#19306a', // even darker blue
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '12px 32px',
+              fontSize: '1rem',
+              fontWeight: 600,
+              marginBottom: '20px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(37,99,235,0.08)',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#14204a'}
+            onMouseLeave={e => e.currentTarget.style.background = '#19306a'}>
             Upload Files
           </button>
-          {warn && <div style={{color:'#e11d48',marginBottom:'12px',fontWeight:500}}>{warn}</div>}
+          {warn && <div style={{ color: '#e11d48', marginBottom: '12px', fontWeight: 500 }}>{warn}</div>}
           {loading && (
-            <div style={{margin:'18px 0'}}>
-              <div style={{fontWeight:500, color:'#2563eb'}}>Loading... {progress}%</div>
-              <progress value={progress} max="100" style={{width:'100%', height:'12px'}} />
+            <div style={{ margin: '18px 0' }}>
+              <div style={{ fontWeight: 500, color: '#2563eb' }}>Loading... {progress}%</div>
+              <progress value={progress} max="100" style={{ width: '100%', height: '12px' }} />
             </div>
           )}
-          {showSuccess && <div style={{color:'#16a34a',margin:'16px 0', fontWeight:500}}>Done! Files uploaded.</div>}
-          <ul style={{textAlign:'left',padding:0,listStyle:'none', marginTop:'18px'}}>
+          {showSuccess && <div style={{ color: '#16a34a', margin: '16px 0', fontWeight: 500 }}>Done! Files uploaded.</div>}
+          <ul style={{ textAlign: 'left', padding: 0, listStyle: 'none', marginTop: '18px' }}>
             {selectedFiles.map((file, idx) => (
               <li key={idx} style={{
-                marginBottom:'10px',
-                display:'flex',
-                justifyContent:'space-between',
-                alignItems:'center',
-                background:'#e5e7eb',
-                borderRadius:'6px',
-                padding:'10px 14px',
-                color:'#222',
-                fontWeight:500
+                marginBottom: '10px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: '#e5e7eb',
+                borderRadius: '6px',
+                padding: '10px 14px',
+                color: '#222',
+                fontWeight: 500
               }}>
-                <span style={{overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'70%', color:'#222'}}>{file.name}</span>
-                <button onClick={() => removeFile(idx)} style={{marginLeft:'12px', background:'#e11d48', color:'#fff', border:'none', borderRadius:'5px', padding:'4px 12px', cursor:'pointer'}}>Remove</button>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '70%', color: '#222' }}>{file.name}</span>
+                <button onClick={() => removeFile(idx)} style={{ marginLeft: '12px', background: '#e11d48', color: '#fff', border: 'none', borderRadius: '5px', padding: '4px 12px', cursor: 'pointer' }}>Remove</button>
               </li>
             ))}
           </ul>
