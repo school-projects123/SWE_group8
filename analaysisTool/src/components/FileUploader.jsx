@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 
 export default function FileUploader() {
+  //define states
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -8,6 +9,7 @@ export default function FileUploader() {
   const [warn, setWarn] = useState("");
   const inputRef = useRef(null);
 
+  //function sets restrictions for if file is chosen and which file types are allowed
   function showLoading() {
     if (selectedFiles.length === 0) {
       setWarn("You have not selected any files.");
@@ -18,7 +20,6 @@ export default function FileUploader() {
     setLoading(true);
     setProgress(50);
     setShowSuccess(false);
-    // Simulate parse error for demonstration (replace with real parse logic)
     const hasCorrupt = selectedFiles.some(f => f.name.toLowerCase().includes("corrupt"));
     setTimeout(() => {
       setProgress(100);
@@ -32,11 +33,12 @@ export default function FileUploader() {
     }, 1000);
   }
 
+  //once files are selected, this function processes them - their names & types are extracted
   async function parseFile(fileObj) {
-    // fake parse for now, real logic later
     return { filename: fileObj.name, data: [] };
   }
 
+  //main part of the page with the upload button and file selection area
   function handleFileSelect(e) {
     const fileList = e.target.files;
     if (!fileList || fileList.length === 0) return;
@@ -62,29 +64,35 @@ export default function FileUploader() {
     e.target.value = '';
   }
 
+  //this function removes a selected file from the list of previously selected files
   function removeFile(index) {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   }
 
+  //Style and structure of the upload page
   return (
     <div style={{
-      minHeight: '100vh',
-      width: '100vw',
+      height: '100vh',
+      width: '100%',
+      boxSizing: 'border-box',
+      padding: 'env(safe-area-inset-top) 16px env(safe-area-inset-bottom)',
       background: '#22304a',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'flex-start', // move content up
+      justifyContent: 'flex-start',
+      overflow: 'auto',
     }}>
       <div style={{
         width: '100%',
-        maxWidth: '700px',
+        maxWidth: '900px',
         margin: '0 auto',
-        marginTop: '40px', // less margin to move up
+        marginTop: '40px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         zIndex: 1,
+        padding: '0 16px'
       }}>
         <header style={{
           width: '100%',
@@ -149,9 +157,8 @@ export default function FileUploader() {
               inputRef.current?.click();
               if (selectedFiles.length > 0) showLoading();
             }}
-
             style={{
-              background: '#19306a', // even darker blue
+              background: '#19306a',
               color: '#fff',
               border: 'none',
               borderRadius: '8px',
