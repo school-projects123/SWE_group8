@@ -169,16 +169,16 @@ function plotWordCountVsScoreFromTable() {
         }
     });
 
-    const innerDiv = document.getElementById('innerDiv') || Object.assign(
+    const scatterDiv = document.getElementById('scatterDiv') || Object.assign(
         document.body.appendChild(document.createElement('div')),
-        { id: 'innerDiv' }
+        { id: 'scatterDiv' }
     );
-    innerDiv.innerHTML = ''; // clear previous
+    scatterDiv.innerHTML = ''; // clear previous
     const canvas = Object.assign(document.createElement('canvas'), { id: 'wordcountScoreChart' });
-    innerDiv.appendChild(canvas);
+    scatterDiv.appendChild(canvas);
 
     if (points.length === 0) {
-        innerDiv.appendChild(document.createTextNode('No valid Word Count / Score pairs to plot.'));
+        scatterDiv.appendChild(document.createTextNode('No valid Word Count / Score pairs to plot.'));
         return;
     }
 

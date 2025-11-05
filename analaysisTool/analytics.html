@@ -9,12 +9,27 @@
 </head>
 
 <body>
+
     <div id="header" style="text-align: center; background-color:crimson; padding: 2px;">
         <h1>Report Branch - Data Analytics.</h1>
     </div>
+    <script src="app.js"></script>
+    <noscript>Please enable Javascript to run this app.</noscript>
+    <div id="topBar" style="display: flex; width: 100%; background-color: lightgray;">
+        <div style="flex: 1; text-align: center; padding: 5px;">
+            <label for="fileInput">Enter filename (or leave blank for default): </label>
+            <input type="text" id="fileInput" placeholder="21755561_Pretend_Essay_Assignment.xls">
+            <button id="loadButton">Load Data</button>
+        </div>
+        <div style="flex: 1; text-align: center; padding: 5px;">
+            <label for="uploadInput">Or select a file: </label>
+            <input type="file" id="uploadInput" style="display:none;">
+            <button id="browseButton" onclick="document.getElementById('uploadInput').click();">Browse...</button>
+        </div>
+    </div>
     <div class="display" style="height: 100%; flex: 1; background-color: lightblue;">
         <div style="display: flex; width: 100%; height: 100%;">
-            <div style="width: 20%; background-color: #f2f2f2; padding: 20px; box-sizing: border-box;">
+            <div style="width: 20%; background-color: #f2f2f2; padding: 10px; box-sizing: border-box;">
                 <h2>Sidebar Menu</h2>
                 <p>See special branch for this</p>
                 <a href="data.html">Spreadsheet Upload</a><br>
@@ -22,12 +37,17 @@
                 <a href="analytics.html">Analytics Report Page</a><br>
                 <p>This works</p>
                 <a href="analytics2.html">Other page</a><br>
+                <h3>Explanatory Text</h3>
+                <p>There is different text on the version of this file found on the special branch, which can be viewed there.</p>
+                <p>The data from the xls(x) files can be read in by the javascript, which creates a table, a bar chart from the data (where the scores are shown with bars, the highest score in green, lowest in red, and the rest in yellow), and a plot (where the word counts are plotted against the scores) (all shown in this web-page).</p> 
+                <p>The plan is to gradually allign this file (index.html) with the other file more closely matching the wireframe design (i.e. analytics.html), and make analytics.html actually look decent too.</p>
+                <p>Note: if you typed something into the prompt and it showed nothing, press enter in the text box (so it uses the default) or copy and paste '21755561_Pretend_Essay_Assignment.xls' into the prompt. You can also try 'gc_PS5906_25_SANDPIT_fullgc_2025-10-07-13-12-38.xls' to compare.</p>
             </div>
-            <div style="width: 80%; background-color: coral; box-sizing: border-box;">
-                <h2>Report</h2>
+            <div style="width: 80%; background-color: lightyellow; box-sizing: border-box;">
+                <h2 style="margin: 1; text-align: center; padding: 0; line-height: 1;">Report</h2>
                 <div style="display: flex; width: 100%; height: 80%;">
-                    <div style="width: 20%; background-color: coral; padding: 20px; box-sizing: border-box;">
-                        <h2>Grades</h2>
+                    <div style="width: 20%; background-color: coral; padding: 10px; box-sizing: border-box;">
+                        <h2 style="margin: 0;">Grades</h2>
                         <h3>Course 1</h3>
                         <canvas id="pieChart1" width="200" height="200"></canvas>
                         <h3>Course 2</h3>
@@ -60,99 +80,10 @@
                         </script>
                     </div>
                     <div style="width: 80%; background-color: coral; padding: 20px; box-sizing: border-box;">
-                        <h2>Sample Bar Chart</h2>
-                        <canvas id="barChart" width="300" height="100"></canvas>
-                        <script>
-                        const barCtx = document.getElementById('barChart').getContext('2d');
-                        new Chart(barCtx, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple'],
-                                datasets: [{
-                                    label: 'Sample Data',
-                                    data: [12, 13, 3, 5, 2],
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.7)',
-                                        'rgba(54, 162, 235, 0.7)',
-                                        'rgba(255, 206, 86, 0.7)',
-                                        'rgba(75, 192, 192, 0.7)',
-                                        'rgba(153, 102, 255, 0.7)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(255, 99, 132, 1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)',
-                                        'rgba(75, 192, 192, 1)',
-                                        'rgba(153, 102, 255, 1)'
-                                    ],
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    y: { beginAtZero: true }
-                                }
-                            }
-                        });
-                        </script>
-                        <table>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Country</th>
-                                <th>Birthday</th>
-                                <th>Occupation</th>
-                                <th>Famous Work</th>
-                            </tr>
-                            <tr>
-                                <td>John Smith</td>
-                                <td>johnsmith@example.com</td>
-                                <td>United Kingdom</td>
-                                <td>1990-01-01</td>
-                                <td>None</td>
-                                <td>Existing</td>
-                            </tr>
-                            <tr>
-                                <td>Jane Doe</td>
-                                <td>janedoe@example.com</td>
-                                <td>Australia</td>
-                                <td>1992-02-02</td>
-                                <td>Example</td>
-                                <td>Not Existing</td>
-                            </tr>
-                            <tr>
-                                <td>Benjamin Britten</td>
-                                <td>(none)</td>
-                                <td>United Kingdom</td>
-                                <td>1913-11-22</td>
-                                <td>Composer</td>
-                                <td>Peter Grimes</td>
-                            </tr>
-                            <tr>
-                                <td>Sir Arnold Bax</td>
-                                <td>(none)</td>
-                                <td>United Kingdom</td>
-                                <td>1883-11-08</td>
-                                <td>Composer</td>
-                                <td>Tintagel</td>
-                            </tr>
-                            <tr>
-                                <td>Ralph Vaughan Williams</td>
-                                <td>(none)</td>
-                                <td>United Kingdom</td>
-                                <td>1872-10-12</td>
-                                <td>Composer</td>
-                                <td>The Lark Ascending</td>
-                            </tr>
-                            <tr>
-                                <td>Gustav Holst</td>
-                                <td>(none)</td>
-                                <td>United Kingdom</td>
-                                <td>1874-09-21</td>
-                                <td>Composer</td>
-                                <td>The Planets</td>
-                            </tr>
-                        </table>
+                        <h2>Actual Charts</h2>
+                        <div id="chartDiv"></div>
+                        <div id="userDiv"></div>
+                        <div id="scatterDiv"></div>
                     </div>
                 </div>
             </div>
