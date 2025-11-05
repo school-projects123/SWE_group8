@@ -82,6 +82,7 @@ export default function FileUploader() {
       alignItems: 'center',
       justifyContent: 'flex-start',
       overflow: 'auto',
+
     }}>
       <div style={{
         width: '100%',
@@ -94,12 +95,13 @@ export default function FileUploader() {
         zIndex: 1,
         padding: '0 16px'
       }}>
+        
         <header style={{
           width: '100%',
           textAlign: 'center',
           marginBottom: '28px',
           outline: 'none',
-        }} tabIndex={0} aria-label="Analysis Tool main heading">
+        }} aria-label="Analysis Tool main heading">
           <h1 style={{
             fontSize: '3rem',
             fontWeight: 900,
