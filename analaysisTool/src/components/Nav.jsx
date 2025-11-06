@@ -33,13 +33,13 @@ export default function Nav() {
       padding: '0 12px'
     }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Link to="/" style={getStyle('/', true)}>Upload</Link>
-        <Link to="/spreadsheet" style={getStyle('/spreadsheet')}>Spreadsheet</Link>
-        <Link to="/report" style={getStyle('/report')}>Report</Link>
++        <Link to="/app" style={getStyle('/app', true)}>Upload</Link>
++        <Link to="/app/spreadsheet" style={getStyle('/app/spreadsheet')}>Spreadsheet</Link>
++        <Link to="/app/report" style={getStyle('/app/report')}>Report</Link>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Link to="/" title="Home">
+        <Link to="/" title="Start">
           <img src={logoSrc} alt="Logo" style={{ height: 60, width: 'auto', marginTop: 5}} />
         </Link>
       </div>

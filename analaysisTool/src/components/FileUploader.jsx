@@ -7,7 +7,6 @@ export default function FileUploader() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [warn, setWarn] = useState("");
-  const inputRef = useRef(null);
 
   //function sets restrictions for if file is chosen and which file types are allowed
   function showLoading() {
@@ -20,7 +19,8 @@ export default function FileUploader() {
     setLoading(true);
     setProgress(50);
     setShowSuccess(false);
-    const hasCorrupt = selectedFiles.some(f => f.name.toLowerCase().includes("corrupt"));
+    //NEED TO MAKE THE CORRUPTION LOGIC WORK
+      const hasCorrupt = selectedFiles.some(f => f.name.toLowerCase().includes("corrupt"));
     setTimeout(() => {
       setProgress(100);
       setLoading(false);
@@ -33,7 +33,7 @@ export default function FileUploader() {
     }, 1000);
   }
 
-  //once files are selected, this function processes them - their names & types are extracted
+  //once files are selected, this function processes them - their names & types are extracted - NEEDTO MAKE WORL
   async function parseFile(fileObj) {
     return { filename: fileObj.name, data: [] };
   }
@@ -144,21 +144,12 @@ export default function FileUploader() {
           }}
             onMouseEnter={e => e.currentTarget.style.borderColor = '#2563eb'}
             onMouseLeave={e => e.currentTarget.style.borderColor = '#b6b6b6'}>
-            <div style={{ fontSize: '1.1rem', color: '#222', marginBottom: '8px' }}>Click to select files</div>
-            <div style={{ fontSize: '0.95rem', color: '#888' }}>CSV, XLS, XLSX supported</div>
-            <input
-              ref={inputRef}
-              type="file"
-              multiple
-              accept=".csv,.xls,.xlsx"
-              onChange={handleFileSelect}
-              style={{ display: 'none' }} />
+              <div style={{ fontSize: '1.1rem', color: '#222', marginBottom: '8px' }}>Click to select files</div>
+              <div style={{ fontSize: '0.95rem', color: '#888' }}>CSV, XLS, XLSX supported</div>
+              <input type="file" multiple onChange={handleFileSelect} style={{display:'none'}} />
           </label>
           <button
-            onClick={() => {
-              inputRef.current?.click();
-              if (selectedFiles.length > 0) showLoading();
-            }}
+            onClick={showLoading}
             style={{
               background: '#19306a',
               color: '#fff',
@@ -174,7 +165,7 @@ export default function FileUploader() {
             }}
             onMouseEnter={e => e.currentTarget.style.background = '#14204a'}
             onMouseLeave={e => e.currentTarget.style.background = '#19306a'}>
-            Upload Files
+            Generate Report
           </button>
           {warn && <div style={{ color: '#e11d48', marginBottom: '12px', fontWeight: 500 }}>{warn}</div>}
           {loading && (
