@@ -14,3 +14,7 @@ def detect_gradebook(df: pd.DataFrame):
     has_course_grade = any("Course Grade Point to Date" in col for col in columns)
     return has_all_columns and has_course_grade
 
+def detect_analytics(df: pd.DataFrame):
+    columns = set(df.columns)
+    return {"Username", "Grades", "Hours in Course"}.issubset(columns)
+    
