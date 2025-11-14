@@ -17,4 +17,12 @@ def detect_gradebook(df: pd.DataFrame):
 def detect_analytics(df: pd.DataFrame):
     columns = set(df.columns)
     return {"Username", "Grades", "Hours in Course"}.issubset(columns)
-    
+
+def find_column(columns, keyword):
+    matches = [col for col in columns if keyword in col]
+    if not matches:
+        raise KeyError(f"No column containing keyword, {keyword} was found in {columns}")
+    if len(matches) > 1:
+        print(f"Multiple columns found for keyword {keyword}...using {matches[0]!r}.")
+    return matches[0]
+
