@@ -26,3 +26,28 @@ def find_column(columns, keyword):
         print(f"Multiple columns found for keyword {keyword}...using {matches[0]!r}.")
     return matches[0]
 
+def main():
+    if not INPUT_DIRECTORY.exists():
+        print(f"Input directory {INPUT_DIRECTORY} does not exist.")
+        return
+    
+    gradebook_path = None
+    analytics_path = None
+
+    for csv_path in INPUT_DIRECTORY.glob("*.csv"):
+        print(f"Checking {csv_path.name} ...")
+
+        try:
+            df_head = pd.read_csv(csv_path, nrows=0)
+        except Exception as e:
+            print(f"Skipping {csv_path.name}: couldn't read {e}")
+            continue
+
+        if gradebook_path is None and detect_gradebook(df_head):
+            gradebook_path = csv_path
+            print(f"Identified GRADEBOOK file: {csv_path.name}")
+        elif analytics_path is None and detect_analytics(df_head):
+            analytics_path = csv_path
+            print(f"Identified ANALYTICS file: {csv_path.name}")
+        else:
+            print(f"NO GRADEBOOK/ANALYTICS FOUND")
