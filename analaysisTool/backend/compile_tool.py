@@ -58,3 +58,14 @@ def main():
     if analytics_path is None:
         print("No analytics file in input_files.")
         return
+    
+    print("\nUsing:")
+    print(f"  GRADEBOOK: {gradebook_path.name}")
+    print(f"  ANALYTICS: {analytics_path.name}\n")
+
+    gradebook_df = pd.read_csv(gradebook_path)
+    analytics_df = pd.read_csv(analytics_path)
+
+    gradebook_columns = list(gradebook_columns)
+    analytics_columns = list(analytics_columns)
+    
