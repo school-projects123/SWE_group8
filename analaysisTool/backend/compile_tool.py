@@ -51,3 +51,10 @@ def main():
             print(f"Identified ANALYTICS file: {csv_path.name}")
         else:
             print(f"NO GRADEBOOK/ANALYTICS FOUND")
+    
+    if gradebook_path is None:
+        print("No gradebook file in input_files.")
+        return
+    if analytics_path is None:
+        print("No analytics file in input_files.")
+        return
