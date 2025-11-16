@@ -68,4 +68,18 @@ def main():
 
     gradebook_columns = list(gradebook_columns)
     analytics_columns = list(analytics_columns)
+
+    GRADEBOOK_FNAME_COLUMN = "First Name"
+    GRADEBOOK_LNAME_COLUMN = "Last Name"
+    GRADEBOOK_USERNAME_COLUMN = "Username"
+    GRADEBOOK_STUDENT_ID_COLUMN = "Student ID"
+
+    GRADEBOOK_COURSE_GRADE_100_COLUMN = find_column(gradebook_columns, "Course Grade Point to Date (%)")
+    GRADEBOOK_EXAM_RAW_COLUMN = find_column(gradebook_columns, "MCQ Exam [Total Pts: 5 Score")
+    GRADEBOOK_ESSAY_RAW_COLUMN = find_column(gradebook_columns, "Pretend Essay Assignment")
+
+    ANALYTICS_USERNAME_COLUMN = "Username"
+    ANALYTICS_GRADES_COLUMN = "Grades"
+    ANALYTICS_HOURS_COLUMN = "Hours in Course"
+
     
