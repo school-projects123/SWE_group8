@@ -96,3 +96,25 @@ def main():
         suffixes=('_gradebook', '_analytics')
     )
 
+    master = pd.DataFrame()
+    master["First Name"] = merged[GRADEBOOK_FNAME_COLUMN]
+    master["Last Name"] = merged[GRADEBOOK_LNAME_COLUMN]
+    master["Username"] = merged[GRADEBOOK_USERNAME_COLUMN]
+    master["Student ID"] = merged[GRADEBOOK_STUDENT_ID_COLUMN]
+
+    master["Grades (%)"] = merged[ANALYTICS_GRADES_COLUMN]
+
+    master["Course Grade (%)"] = merged[GRADEBOOK_COURSE_GRADE_100_COLUMN]
+
+    master["Exam Score (Raw)"] = merged[GRADEBOOK_EXAM_RAW_COLUMN]
+    master["Essay Score (Raw)"] = merged[GRADEBOOK_ESSAY_RAW_COLUMN]
+
+    master["Hours in Course"] = merged[ANALYTICS_HOURS_COLUMN]
+
+    print(f"Saving master spreadsheet to {OUTPUT_FILE} ...")
+    master.to_excel(OUTPUT_FILE, index=False)
+    print("Done!")
+
+if __name__ == "__main__":
+    main()
+
