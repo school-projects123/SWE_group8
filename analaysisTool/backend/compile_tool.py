@@ -68,7 +68,7 @@ def main():
 
     gradebook_columns = list(gradebook.columns)
     analytics_columns = list(analytics.columns)
-    
+
     GRADEBOOK_FNAME_COLUMN = "First Name"
     GRADEBOOK_LNAME_COLUMN = "Last Name"
     GRADEBOOK_USERNAME_COLUMN = "Username"
@@ -86,4 +86,13 @@ def main():
         ANALYTICS_USERNAME_COLUMN,
         ANALYTICS_GRADES_COLUMN,
         ANALYTICS_HOURS_COLUMN,]]
+    
+    merged = pd.merge(
+        gradebook,
+        analytics_trimmed,
+        left_on=GRADEBOOK_USERNAME_COLUMN,
+        right_on=ANALYTICS_USERNAME_COLUMN,
+        how="left",
+        suffixes=('_gradebook', '_analytics')
+    )
 
