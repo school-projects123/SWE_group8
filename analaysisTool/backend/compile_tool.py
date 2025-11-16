@@ -11,7 +11,7 @@ def detect_gradebook(df: pd.DataFrame):
     columns = list(df.columns)
     required_columns = {"First Name", "Last Name", "Username", "Student ID"}
     has_all_columns = required_columns.issubset(set(columns))
-    has_course_grade = any("Course Grade Point to Date" in col for col in columns)
+    has_course_grade = any("Course Grade Point To Date" in col for col in columns)
     return has_all_columns and has_course_grade
 
 def detect_analytics(df: pd.DataFrame):
@@ -74,7 +74,7 @@ def main():
     GRADEBOOK_USERNAME_COLUMN = "Username"
     GRADEBOOK_STUDENT_ID_COLUMN = "Student ID"
 
-    GRADEBOOK_COURSE_GRADE_100_COLUMN = find_column(gradebook_columns, "Course Grade Point to Date (%)")
+    GRADEBOOK_COURSE_GRADE_100_COLUMN = find_column(gradebook_columns, "Course Grade Point To Date")
     GRADEBOOK_EXAM_RAW_COLUMN = find_column(gradebook_columns, "MCQ Exam [Total Pts: 5 Score")
     GRADEBOOK_ESSAY_RAW_COLUMN = find_column(gradebook_columns, "Pretend Essay Assignment")
 
