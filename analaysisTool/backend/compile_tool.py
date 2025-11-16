@@ -63,12 +63,12 @@ def main():
     print(f"  GRADEBOOK: {gradebook_path.name}")
     print(f"  ANALYTICS: {analytics_path.name}\n")
 
-    gradebook_df = pd.read_csv(gradebook_path)
-    analytics_df = pd.read_csv(analytics_path)
+    gradebook = pd.read_csv(gradebook_path)
+    analytics = pd.read_csv(analytics_path)
 
-    gradebook_columns = list(gradebook_columns)
-    analytics_columns = list(analytics_columns)
-
+    gradebook_columns = list(gradebook.columns)
+    analytics_columns = list(analytics.columns)
+    
     GRADEBOOK_FNAME_COLUMN = "First Name"
     GRADEBOOK_LNAME_COLUMN = "Last Name"
     GRADEBOOK_USERNAME_COLUMN = "Username"
@@ -82,4 +82,8 @@ def main():
     ANALYTICS_GRADES_COLUMN = "Grades"
     ANALYTICS_HOURS_COLUMN = "Hours in Course"
 
-    
+    analytics_trimmed = analytics[[
+        ANALYTICS_USERNAME_COLUMN,
+        ANALYTICS_GRADES_COLUMN,
+        ANALYTICS_HOURS_COLUMN,]]
+
