@@ -12,21 +12,35 @@ export default function Upload() {
         const workbook = XLSX.read(data, {type: 'array'});
         const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
-        // Show the Excel data in a table in the html.
+        const MAX_ROWS = 15; // show only the first 15 rows, just in case this is a large file
+        // plus all this is displayed on the spreadsheet page anyway
+
         let userDiv = document.getElementById('userDiv');
         if (!userDiv) {
             userDiv = document.createElement('div');
             userDiv.id = 'userDiv';
             document.body.appendChild(userDiv);
         }
-        let table = '<table border="1"><tr><th>Last Name</th><th>First Name</th><th>e-mail</th><th>Turnitin User ID</th><th>Title</th><th>Word Count</th><th>Date Uploaded</th><th>Grade</th><th>Similarity Score</th></tr>';
-        jsonData.forEach(user => {
+        // create a compact container for the table
+        const tableContainer = document.createElement('div');
+        tableContainer.style.maxHeight = '220px';
+        tableContainer.style.maxWidth = '100%';
+        tableContainer.style.overflow = 'auto';
+        tableContainer.style.fontSize = '12px';
+        tableContainer.style.lineHeight = '1.2';
+        tableContainer.style.marginBottom = '8px';
+
+        let table = '<table style="border-collapse:collapse;font-size:12px" border="1"><tr>'
+            + '<th>Last</th><th>First</th><th>Email</th><th>Turnitin ID</th><th>Title</th><th>Words</th><th>Date</th><th>Grade</th><th>Sim</th>'
+            + '</tr>';
+
+        jsonData.slice(0, MAX_ROWS).forEach(user => {
             table += `<tr>
                 <td>${user['Last Name'] || ''}</td>
                 <td>${user['First Name'] || ''}</td>
                 <td>${user.Email || ''}</td>
                 <td>${user['Turnitin User ID'] || ''}</td>
-                <td>${user.Title || ''}</td>
+                <td>${(user.Title || '').toString().slice(0, 30)}</td>
                 <td>${user['Word Count'] || ''}</td>
                 <td>${user['Date Uploaded'] || ''}</td>
                 <td>${user.Grade || ''}</td>
@@ -34,31 +48,75 @@ export default function Upload() {
             </tr>`;
         });
         table += '</table>';
-        userDiv.innerHTML = table;
+        tableContainer.innerHTML = table;
 
-        // Show a bar chart to plot each user and their score, colour top scorers green, and worst red.
+        if (jsonData.length > MAX_ROWS) { // if there are more rows, add 'show all'
+            const more = document.createElement('div');
+            more.style.fontSize = '12px';
+            more.style.marginTop = '4px';
+            const btn = document.createElement('button');
+            btn.textContent = `Show all (${jsonData.length})`;
+            btn.style.fontSize = '12px';
+            btn.onclick = () => {
+                tableContainer.innerHTML = '<table style="border-collapse:collapse;font-size:12px" border="1"><tr>'
+                    + '<th>Last</th><th>First</th><th>Email</th><th>Turnitin ID</th><th>Title</th><th>Words</th><th>Date</th><th>Grade</th><th>Sim</th>'
+                    + '</tr>' + jsonData.map(user => `<tr>
+                        <td>${user['Last Name'] || ''}</td>
+                        <td>${user['First Name'] || ''}</td>
+                        <td>${user.Email || ''}</td>
+                        <td>${user['Turnitin User ID'] || ''}</td>
+                        <td>${(user.Title || '').toString().slice(0, 60)}</td>
+                        <td>${user['Word Count'] || ''}</td>
+                        <td>${user['Date Uploaded'] || ''}</td>
+                        <td>${user.Grade || ''}</td>
+                        <td>${user['Similarity Score'] || ''}</td>
+                    </tr>`).join('') + '</table>';
+                more.remove();
+            };
+            more.appendChild(btn);
+            tableContainer.appendChild(more);
+        }
+
+        userDiv.innerHTML = ''; // replace previous content, clear it
+        userDiv.appendChild(tableContainer);
+
+        // compact chart area
         const chartDiv = document.getElementById('chartDiv') || Object.assign(
             document.body.appendChild(document.createElement('div')),
             {id: 'chartDiv'}
         );
-        chartDiv.innerHTML = ''; // Clear previous chart
-        const canvas = Object.assign(document.createElement('canvas'), {id:'userScoreChart'});
+        chartDiv.innerHTML = ''; // clear previous chart, this used to cause issues
+
+        // create a smaller canvas
+        const canvas = Object.assign(document.createElement('canvas'), { id: 'userScoreChart' });
+        canvas.style.width = '480px';
+        canvas.style.maxWidth = '80%'; // WIDTH FOR THE BAR CHART!
+        canvas.style.height = '240px';
+        canvas.width = 480;
+        canvas.height = 240;
         chartDiv.appendChild(canvas);
 
-        // Prepare data for chart
-        const users = jsonData.filter(u => typeof u.Grade === 'number' || !isNaN(parseFloat(u.Grade)));
-        const labels = users.map(u => `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim());
-        const scores = users.map(u => Number(u.Grade));
-        const maxScore = Math.max(...scores);
-        const minScore = Math.min(...scores);
+        // prepare data for chart (robust parsing!)
+        const users = jsonData
+            .map(u => ({ name: `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim(), grade: parseFloat(u.Grade) }))
+            .filter(u => !isNaN(u.grade));
+
+        const labels = users.map(u => u.name || 'Unknown');
+        const scores = users.map(u => u.grade);
+        const maxScore = scores.length ? Math.max(...scores) : 0;
+        const minScore = scores.length ? Math.min(...scores) : 0;
 
         const backgroundColours = scores.map(score => {
             if (score === maxScore) return 'green';
             if (score === minScore) return 'red';
-            return 'yellow';
+            return 'rgba(255, 206, 86, 0.9)'; // muted yellow, ie middling scores
         });
 
         loadChartJs(() => {
+            // ensure the chart canvas uses 80% of its container width
+            canvas.style.width = '30%';
+            canvas.style.maxWidth = '30%';
+
             new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -68,13 +126,20 @@ export default function Upload() {
                         data: scores,
                         backgroundColor: backgroundColours,
                         borderColor: 'black',
-                        borderWidth: 2
+                        borderWidth: 1
                     }]
                 },
                 options: {
-                    scales: {y:{beginAtZero:true}},
+                    indexAxis: 'x',
+                    responsive: true,             // allow chart to scale to canvas style width
+                    maintainAspectRatio: false,   // use the canvas height/width as-is
+                    scales: {
+                        x: { ticks: { maxRotation: 45, minRotation: 0 }, grid: { display: false } },
+                        y: { beginAtZero: true, ticks: { stepSize: 10 } }
+                    },
                     plugins: {
-                        legend: {display: false}
+                        legend: { display: false },
+                        tooltip: { bodyFont: { size: 12 } }
                     }
                 }
             });
@@ -83,7 +148,7 @@ export default function Upload() {
 
     function getFilenameFromTopBarName() {
         const input = document.getElementById('fileInput');
-        return (input && input.value.trim()) ? input.value.trim() : defaultFilename;
+        return (input && input.value.trim()) ? input.value.trim() : defaultFilename; // returns the default if blank
     }
 
     function getFilenameFromTopBarSelect() {
@@ -165,7 +230,7 @@ export default function Upload() {
         const canvas = Object.assign(document.createElement('canvas'), { id: 'wordcountScoreChart' });
         scatterDiv.appendChild(canvas);
 
-        if (points.length === 0) {
+        if (points.length === 0) { // no (valid) data
             scatterDiv.appendChild(document.createTextNode('No valid Word Count / Score pairs to plot.'));
             return;
         }
@@ -206,7 +271,7 @@ export default function Upload() {
         });
     }
 
-    useEffect(() => {
+    useEffect(() => { // this does't read data, YET, TO DO
         loadChartJs(() => {
             const Chart = window.Chart;
             const ctx1 = pieChart1Ref.current && pieChart1Ref.current.getContext('2d');
@@ -229,7 +294,7 @@ export default function Upload() {
                     data: {
                         labels: ['Grade A', 'Grade B', 'Grade C'],
                         datasets: [{
-                            data: [30, 100, 20],
+                            data: [30, 99, 20],
                             backgroundColor: ['#ff6384', '#36a2eb', '#58ff56'],
                         }]
                     }
@@ -275,13 +340,13 @@ export default function Upload() {
     }, []);
 
     return (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", boxSizing: "border-box", overflow: "hidden" }}>
             {/* Note: meta/title elements belong in the document head; use react-helmet if needed */}
             <div id="header" style={{ textAlign: "center", backgroundColor: "blue", padding: "2px" }}>
                 <h1>Report Branch - Data Analytics</h1>
             </div>
             <noscript>Please enable Javascript to run this app.</noscript>
-            <div id="topBar" style={{ display: "flex", width: "100%", backgroundColor: "darkgrey" }}>
+            <div id="topBar" style={{ display: "flex", width: "100%", backgroundColor: "darkgrey", maxWidth: "100%" }}>
                 <div style={{ flex: 1, textAlign: "center", padding: "5px" }}>
                     <label htmlFor="fileInput">Enter filename (or leave blank for default): </label>
                     <input type="text" id="fileInput" placeholder="21755561_Pretend_Essay_Assignment.xls" />
@@ -293,20 +358,20 @@ export default function Upload() {
                     <button id="browseButton" onClick={() => document.getElementById('uploadInput').click()}>Browse...</button>
                 </div>
             </div>
-            <div className="display" style={{ height: "100%", flex: 1, backgroundColor: "lightblue" }}>
-                <div style={{ display: "flex", width: "100%", height: "100%" }}>
-                    <div style={{ width: "20%", backgroundColor: "black", padding: "10px", boxSizing: "border-box" }}>
+            <div className="display" style={{ height: "100%", flex: 1, backgroundColor: "lightblue", maxWidth: "100%" }}>
+                <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
+                    <div style={{ width: "20%", backgroundColor: "black", padding: "10px" }}>
                         <h2>Sidebar Menu</h2>
                         <p>As this is jsx, that means .html still doesn't work, so there is no point leaving that here, plus the links show up at the top, or at least they do for me.</p>
                         <h3>Explanatory Text</h3>
-                        <p>There is different text on the version of this file found on the <a href="https://github.com/school-projects123/SWE_group8/tree/Special-Branch">special branch</a>, which can be viewed there.</p>
+                        <p>There is different text on the version of this file found on the <a href="https://github.com/school-projects123/SWE_group8/tree/Special-Branch">Special-Branch</a>, which can be viewed there. This version is being worked on in the <a href="https://github.com/school-projects123/SWE_group8/tree/Report_branch">Report_branch</a>.</p>
                         <p>The data from the xls(x) files can be read in by the javascript, which creates a table, a bar chart from the data (where the scores are shown with bars, the highest score in green, lowest in red, and the rest in yellow), and a plot (where the word counts are plotted against the scores) (all shown in this web-page).</p> 
                         <p>The plan is to gradually align this file (analytics.html) with the design of the file upload file from the other branch (in the process making it look decent).</p>
                         <p>Note: if you typed a file name into the prompt and it is now showing nothing, press enter with the text box blank (so it uses the default) or copy and paste '21755561_Pretend_Essay_Assignment.xls' into the prompt. You can also try 'gc_PS5906_25_SANDPIT_fullgc_2025-10-07-13-12-38.xls' to compare.</p>
                     </div>
-                    <div style={{ width: "80%", backgroundColor: "lightyellow", boxSizing: "border-box" }}>
+                    <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
                         <h2 style={{ margin: 1, textAlign: "center", padding: 0, lineHeight: 1 }}>Report</h2>
-                        <div style={{ display: "flex", width: "100%", height: "80%" }}>
+                        <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
                             <div style={{ width: "20%", backgroundColor: "coral", padding: "10px", boxSizing: "border-box" }}>
                                 <h2 style={{ margin: 0 }}>Grades</h2>
                                 <h3>Course 1</h3>
