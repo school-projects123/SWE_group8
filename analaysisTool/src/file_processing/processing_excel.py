@@ -1,7 +1,7 @@
 # need to change to snake case
 from flask import Flask, request, jsonify # flask for getting file path from front end (upload page)
 from flask_cors import CORS
-import os # for finding the file path
+import io # for file reading
 import pandas as pd # for mock retriving the post until that is set up in frontend
 
 app = Flask(__name__)
@@ -37,17 +37,26 @@ def process_excel():
                 file_extrac = file.filename.split(".")[-1].lower()
                 preview_text = ""
 
-                if file_extrac in ["csv"]:
+                if file_extrac == "csv":
                     df = pd.read_csv(file)
                     # currently preview first 5 rows
                     preview_text = df.head(5).to_csv(index = False) 
-                elif file_extrac in ["xls","xlsx"]:
-                    df = pd.read_excel(file)
-                    preview_text = df.head(5).to_csv(ndex=False)
-                else:
-                    # error if another file is somehow uloaded
-                    content = file.read().decode("utf-8", errors = "ignore")
-                    preview_text = content[:500]
+                elif file_extrac in ["xls", "xlsx"]:
+                    try:
+                        engine = "xlrd" if file_extrac == "xls" else "openpyxl"
+                        df = pd.read_excel(file, engine=engine)
+                        preview_text = df.head(5).to_csv(index=False)
+                    except Exception:
+                        #go to reading as CSV/ UTF-16 text - was having issues because its a bof type file not a biff tyep file?
+                        file.seek(0)
+                        try:
+                            df = pd.read_csv(io.stringIO(file.read().decode("utf-16", errors = "ignore")))
+                            preview_text = df.head(5).to_csv(index=False)
+                        except:
+                            file.seek(0)
+                            # error if another file is somehow uloaded
+                            content = file.read().decode("utf-8", errors = "ignore")
+                            preview_text = content[:500]
 
                 courses[course].append({
                     "file_name":file.filename,
