@@ -38,25 +38,28 @@ def process_excel():
                 preview_text = ""
 
                 if file_extrac == "csv":
-                    df = pd.read_csv(file)
+                    df = pd.read_csv(file, encoding = "utf-16")
                     # currently preview first 5 rows
                     preview_text = df.head(5).to_csv(index = False) 
-                elif file_extrac in ["xls", "xlsx"]:
-                    try:
-                        engine = "xlrd" if file_extrac == "xls" else "openpyxl"
-                        df = pd.read_excel(file, engine=engine)
+                elif file_extrac == "xlsx":
+                    df = pd.read_excel(file, engine="openpyxl")
+                    preview_text = df.head(5).to_csv(index=False)
+                elif file_extrac == "xls":
+                        #go to reading as CSV/ UTF-16 text - was having issues because its a bof type file not a biff type file?
+                        #check what type of file it is
+                        file_bytes = file.read()
+                        # read as tsl file if it detects BOM becuase its not a proper excel/csv (because its doenloaded from blackboard)
+                        if file_bytes.startswith(b"\xff\xfe") or file_bytes.startswith(b"\xfe\xff"):
+                            text = file_bytes.decode("utf-16")
+                            df = pd.read_csv(io.StringIO(text), sep="\t")
+                        else:
+                            df = pd.read_excel(io.BytesIO(file_bytes), engine="xlrd")
+                            # got rid of try and catch becuse it was getting in the way of debugging
+                            # will add try and except to handle actual malformed files in future
+                            
                         preview_text = df.head(5).to_csv(index=False)
-                    except Exception:
-                        #go to reading as CSV/ UTF-16 text - was having issues because its a bof type file not a biff tyep file?
-                        file.seek(0)
-                        try:
-                            df = pd.read_csv(io.stringIO(file.read().decode("utf-16", errors = "ignore")))
-                            preview_text = df.head(5).to_csv(index=False)
-                        except:
-                            file.seek(0)
-                            # error if another file is somehow uloaded
-                            content = file.read().decode("utf-8", errors = "ignore")
-                            preview_text = content[:500]
+                print(file.read(20))
+                file.seek(0)
 
                 courses[course].append({
                     "file_name":file.filename,
