@@ -350,7 +350,7 @@ export default function Upload() {
                 <div style={{ flex: 1, textAlign: "center", padding: "5px" }}>
                     <label htmlFor="fileInput">Enter filename (or leave blank for default): </label>
                     <input type="text" id="fileInput" placeholder="21755561_Pretend_Essay_Assignment.xls" />
-                    <button id="loadButton">Load Data</button>
+                    <button id="loadButton" style={{ marginLeft: "5px" }}>Load Data</button>
                 </div>
                 <div style={{ flex: 1, textAlign: "center", padding: "5px" }}>
                     <label htmlFor="uploadInput">Or select a file: </label>
@@ -370,7 +370,6 @@ export default function Upload() {
                         <p>Note: if you typed a file name into the prompt and it is now showing nothing, press enter with the text box blank (so it uses the default) or copy and paste '21755561_Pretend_Essay_Assignment.xls' into the prompt. You can also try 'gc_PS5906_25_SANDPIT_fullgc_2025-10-07-13-12-38.xls' to compare.</p>
                     </div>
                     <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
-                        <h2 style={{ margin: 1, textAlign: "center", padding: 0, lineHeight: 1 }}>Report</h2>
                         <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
                             <div style={{ width: "20%", backgroundColor: "coral", padding: "10px", boxSizing: "border-box" }}>
                                 <h2 style={{ margin: 0 }}>Grades</h2>
@@ -390,7 +389,7 @@ export default function Upload() {
                 </div>
             </div>
             <div id="bottomBar" style={{ display: "flex", width: "100%", backgroundColor: "lightgray" }}>
-                <div style={{ flex: 1, textAlign: "center", padding: "10px" }}>
+                <div style={{ flex: 1, textAlign: "center" }}>
                     <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", justifyContent: "center", gap: "20px" }}>
                     <li><a href="https://github.com/school-projects123/SWE_group8">GitHub Repository</a></li>
                     <li><a href="https://github.com/school-projects123/SWE_group8/tree/Special-Branch">(Special Branch)</a></li>
