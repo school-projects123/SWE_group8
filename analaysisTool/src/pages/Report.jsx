@@ -181,7 +181,7 @@ export default function Upload() {
     function loadChartJs(callback) {
         if (window.Chart) return callback();
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js'; // its easier to load it from CDN because if you try loading it locally while its hosted then it can't access it
         script.onload = callback;
         document.head.appendChild(script);
     }
