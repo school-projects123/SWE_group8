@@ -131,8 +131,8 @@ export default function Upload() {
                 },
                 options: {
                     indexAxis: 'x',
-                    responsive: true,             // allow chart to scale to canvas style width
-                    maintainAspectRatio: false,   // use the canvas height/width as-is
+                    responsive: true, // allow chart to scale to canvas style width
+                    maintainAspectRatio: false, // use the canvas height/width as-is
                     scales: {
                         x: { ticks: { maxRotation: 45, minRotation: 0 }, grid: { display: false } },
                         y: { beginAtZero: true, ticks: { stepSize: 10 } }
@@ -227,8 +227,21 @@ export default function Upload() {
             { id: 'scatterDiv' }
         );
         scatterDiv.innerHTML = ''; // clear previous
+
+        // container to control the visual width of the chart, this helps somewhat
+        const container = document.createElement('div');
+        container.style.width = '150%';
+        container.style.margin = '0 auto';
+        // Cap the width here:
+        container.style.maxWidth = '480px';   // <-- cap to 480px
+        // container.style.maxWidth = '60%';  // <-- or cap to 60% of parent (uncomment preferred)
+        scatterDiv.appendChild(container);
+
         const canvas = Object.assign(document.createElement('canvas'), { id: 'wordcountScoreChart' });
-        scatterDiv.appendChild(canvas);
+        // make the canvas fill the container; Chart.js will size to the parent when responsive:true
+        canvas.style.width = '80%';
+        canvas.style.height = '320px'; // visual height; Chart will respect this when maintainAspectRatio:false
+        container.appendChild(canvas);
 
         if (points.length === 0) { // no (valid) data
             scatterDiv.appendChild(document.createTextNode('No valid Word Count / Score pairs to plot.'));
@@ -248,9 +261,10 @@ export default function Upload() {
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
-                        x: { title: {display: true, text: 'Word Count'}, beginAtZero: true },
-                        y: { title: {display: true, text: 'Score'},beginAtZero: true }
+                        x: { title: { display: true, text: 'Word Count' }, beginAtZero: true },
+                        y: { title: { display: true, text: 'Score' }, beginAtZero: true }
                     },
                     plugins: {
                         legend: { display: false },
