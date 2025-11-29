@@ -16,7 +16,7 @@ CORS(app)
 @app.route("/process", methods=["POST"])
 
 # funtion to process input from react frontend
-def process_excel():
+def process_file():
     #info = request.get_json
     num_of_files = int(request.form.get("numOfFiles",0))
     #num_of_files = int(file_info["num_of_files"])
@@ -41,9 +41,15 @@ def process_excel():
                 body_content = {}
 
                 if file_extrac == "csv":
-                    df = pd.read_csv(file, encoding = "utf-16")
-                    #print("csv uploaded")
-                    # currently preview first 5 rows
+                    try:
+                        # if file is csv from blackboard it will be utf-8 with BOM
+                        df = pd.read_csv(file, encoding = "utf-8-sig")
+                    except:
+                        # if it is xls or xlsx it will be utf- 16
+                        file.seek(0)                      
+                        df = pd.read_csv(file, encoding = "utf-16")
+                    # print("csv uploaded")
+                    # currently preview first 3 rows for preview but is converted to a python dict for the version with all info 
                     preview_text = df.head(3).to_csv(index = False) 
                     body_content = df.head().to_dict(orient = 'records')
                 elif file_extrac == "xlsx":
@@ -63,19 +69,20 @@ def process_excel():
                             text = file_bytes.decode("utf-16")
                             df = pd.read_csv(io.StringIO(text), sep="\t")
                             #print("is weird tsl (pretending to be xls) file",df)
-                            preview_text = df.head(3).to_csv(index=False)
-                            body_content = df.head().to_dict(orient = 'records')
                         else:
                             try:
-                                df = pd.read_excel(io.BytesIO(file_bytes), engine="xlrd")
+                                # try utf 8 first again
+                                text = file_bytes.decode("utf-8-sig")
+                                df = pd.read_excel(io.StringIO(text), sep="\t")
                                 # got rid of try and catch becuse it was getting in the way of debugging
                                 # will add try and except to handle actual malformed files in future
                                 #print("is other weird fake xls file",df)
-                                preview_text = df.head(3).to_csv(index=False)
-                                body_content = df.head().to_dict(orient = 'records')
-                            except Exception as excel_err:
-                                raise Exception("unsupported XLS format: "+str(excel_err))
-                            
+                            except Exception:
+                                # fall back onto excel binary format
+                                df = pd.read_excel(io.BytesIO(file_bytes), engine="xlrd")
+                        
+                        preview_text = df.head(3).to_csv(index=False)
+                        body_content = df.head().to_dict(orient = 'records')
                         
                         # this genrates the wrongly processed file!
                         # preview_text = df.head().to_csv(index=False)
@@ -133,7 +140,6 @@ def process_excel():
     # eventually it will have multiple course_names with actuall names to parse through
     return info 
     print("not implimented")
-
 
 
 if __name__ =="__main__":

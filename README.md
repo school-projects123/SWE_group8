@@ -11,7 +11,7 @@ This is just temp until proper pipline is set up
 ## Activate the environment
 powershell:
 "Set-ExecutionPolicy Bypass -Scope Process"
-to temp allow activation becuse powershell doesn't like it for some reason. then run: ".\\.venv\Scripts\Activate.ps1"
+to temp allow activation becuse powershell doesn't like it for some reason. then run: ".venv\Scripts\Activate.ps1"
 
 cmd: ".\\.venv\Scripts\activate.bat"
 
