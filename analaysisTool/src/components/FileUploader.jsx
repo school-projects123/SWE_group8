@@ -91,6 +91,7 @@ export default function FileUploader() {
 
       const data = await res.json();
       console.log("Backend responce:", data);
+      // not showing up because it is called after the await because browsers block popups outside user-click events
       alert("Upload complete! (output on console)");   
     } catch (err) {
       console.error("error sending to backend:", err);

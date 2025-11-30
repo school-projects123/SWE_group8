@@ -17,12 +17,12 @@ cmd: ".\\.venv\Scripts\activate.bat"
 
 ## Run each script
 run the backend then the frontend
-flask/react:
+flask/python - runing backend:
     ensure all installs in requirements.txt are installed
     cd to analaysisTool/src/file_processing
     python processing_excel.py
 
-vite/react:
+vite/react - running frontend:
     cd to analaysisTool
     npm run dev
 

@@ -9,13 +9,13 @@ app = Flask(__name__)
 CORS(app)
 
 # This script will retrive the information from the upload page and store/ sort the excel files depending on the courses they are assigned to
-
 # for now file info is being passed in the function directly to mock the json responce
 # file_info = {"num_of_files":"N", "file_0": {"name": "name.csv","FormData": "what everform data looks like", "course": "CS3400"},..., "file_N":{}}
 # likely recived via a POST from front end that sends a json that can be read as a python dict /process with be the front end command thats sends the files to be processed once the gen report button is clicked
 @app.route("/process", methods=["POST"])
 
 # funtion to process input from react frontend
+# need to add a message that sends to front end if there are file issues , rn it just says that the files were uploaded
 def process_file():
     #info = request.get_json
     num_of_files = int(request.form.get("numOfFiles",0))
@@ -140,6 +140,25 @@ def process_file():
     # eventually it will have multiple course_names with actuall names to parse through
     return info 
     print("not implimented")
+
+# will add call within file processor to cheak that uploaded file isn't malformed - not fully implemented yet
+def safe_dataframe(df):
+    try:
+        # Basic sanity checks
+        # incase a non compatable file is accidentally passed in
+        if df is None:
+            raise ValueError("No data loaded")
+        # wont add an emty file because it has no info
+        if df.empty:
+            raise ValueError("File contains no rows")
+
+        # Force evaluation so it catches parser/data corruption issues
+        df.head(1)
+
+        return None   # no error
+    # if somthing else goes wring return the error # insted of sending a signal to front end to move on send an error message that the file cannon't be read
+    except Exception as e:
+        return f"Malformed or unreadable file: {str(e)}"
 
 
 if __name__ =="__main__":
