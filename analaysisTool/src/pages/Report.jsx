@@ -357,7 +357,7 @@ export default function Upload() {
         <div style={{ display: "flex", flexDirection: "column", boxSizing: "border-box", overflow: "hidden" }}>
             {/* Note: meta/title elements belong in the document head; use react-helmet if needed */}
             <noscript>Please enable Javascript to run this app.</noscript>
-            <div id="topBar" style={{ display: "flex", width: "100%", backgroundColor: "darkgrey", maxWidth: "100%" }}>
+            <div id="topBar" style={{ display: "flex", width: "100%", backgroundColor: "#2563eb", maxWidth: "100%" }}>
                 <div style={{ flex: 1, textAlign: "center", padding: "5px" }}>
                     <label htmlFor="fileInput">Enter filename (or leave blank for default): </label>
                     <input type="text" id="fileInput" placeholder="21755561_Pretend_Essay_Assignment.xls" />
@@ -371,7 +371,7 @@ export default function Upload() {
             </div>
             <div className="display" style={{ height: "100%", flex: 1, backgroundColor: "lightblue", maxWidth: "100%" }}>
                 <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
-                    <div style={{ width: "20%", backgroundColor: "#2563eb", padding: "10px" }}>
+                    <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px" }}>
                         <h2>Report Page/ Data Analytics</h2>
                         <p>As this is jsx, that means .html still doesn't work, so there is no point leaving that here, plus the links show up at the top, or at least they do for me.</p>
                         <h3>Explanatory Text</h3>
@@ -382,14 +382,14 @@ export default function Upload() {
                     </div>
                     <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
                         <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
-                            <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px", boxSizing: "border-box" }}>
+                            <div style={{ width: "20%", backgroundColor: "#b6b6b6", padding: "10px", boxSizing: "border-box" }}>
                                 <h2 style={{ margin: 0 }}>Grades</h2>
                                 <h3>Course 1</h3>
                                 <canvas ref={pieChart1Ref} id="pieChart1" width="200" height="200"></canvas>
                                 <h3>Course 2</h3>
                                 <canvas ref={pieChart2Ref} id="pieChart2" width="200" height="200"></canvas>
                             </div>
-                            <div style={{ width: "80%", backgroundColor: "#19306a", padding: "20px", boxSizing: "border-box" }}>
+                            <div style={{ width: "80%", backgroundColor: "#b6b6b6", padding: "20px", boxSizing: "border-box" }}>
                                 <h2>Actual Charts</h2>
                                 <div id="chartDiv"></div>
                                 <div id="userDiv"></div>
