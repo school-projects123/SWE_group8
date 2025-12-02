@@ -110,7 +110,7 @@ export default function Upload() {
         const backgroundColours = scores.map(score => {
             if (score === maxScore) return 'green';
             if (score === minScore) return 'red';
-            return 'rgba(255, 206, 86, 0.9)'; // muted yellow, ie middling scores
+            return 'rgba(255, 206, 86, 0.9)'; // muted yellow for middling scores
         });
 
         loadChartJs(() => {
@@ -167,8 +167,8 @@ export default function Upload() {
     }
 
     function loadData(filename) {
-        loadXlsxJs(() => {
-            fetch(filename)
+        loadXlsxJs(() => { // this will have to be rewritten, also its best to do this only once as it is currently called
+            fetch(filename) // more than once, and once this is a backend call that will make it slow and also simply wrong
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.arrayBuffer();
@@ -233,7 +233,6 @@ export default function Upload() {
         const container = document.createElement('div');
         container.style.width = '150%';
         container.style.margin = '0 auto';
-        // Cap the width here:
         container.style.maxWidth = '480px';   // <-- cap to 480px
         // container.style.maxWidth = '60%';  // <-- or cap to 60% of parent (uncomment preferred)
         scatterDiv.appendChild(container);
@@ -287,6 +286,7 @@ export default function Upload() {
     }
 
     useEffect(() => { // this does't read data, YET, TO DO
+        // or this should show student specific records here instead of pie charts?
         loadChartJs(() => {
             const Chart = window.Chart;
             const ctx1 = pieChart1Ref.current && pieChart1Ref.current.getContext('2d');
@@ -318,6 +318,7 @@ export default function Upload() {
         });
 
         // Setup event listeners for topBar (for loading files in)
+        // these will be REMOVED when the backend is merged and i have that...
         const loadButton = document.getElementById('loadButton');
         if (loadButton) {
             loadButton.addEventListener('click', () => {
@@ -335,7 +336,7 @@ export default function Upload() {
         loadData(defaultFilename); // either way this loads the default data on first load
 
         // Watch for the main user-score chart being created and trigger the wordcount vs score plot.
-        // Use a dataset flag on the main canvas so we re-create the plot each time the main chart is rebuilt.
+        // this ideally too ought to go
         const userChartObserver = new MutationObserver(() => {
             const mainCanvas = document.getElementById('userScoreChart');
             if (mainCanvas && !mainCanvas.dataset.wordcountPlotted) {
