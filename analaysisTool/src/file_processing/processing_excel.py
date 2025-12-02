@@ -1,9 +1,8 @@
 # need to change to snake case
-from flask import Flask, request, jsonify # flask for getting file path from front end (upload page)
+from flask import Flask, request, jsonify, send_from_directory # flask for getting file info from front end (upload page)
 from flask_cors import CORS
 import io # for file reading
 import pandas as pd # for mock retriving the post until that is set up in frontend
-import json
 # these are for converting dict info to pandas dataframe:
 import re
 from html import unescape
@@ -11,9 +10,23 @@ from html import unescape
 # constants/ compiled regex
 re_tag = re.compile(r"<.*?>")
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder = "",
+            static_url_path="https://dariiapotapenko.pythonanywhere.com/app")
 #to allow for cross platform communication (flask and vite are on diff [ports for development])
 CORS(app)
+
+# these are the react serving routes
+# Serve the React homepage
+@app.route("/")
+def serve_react():
+    # should this be the upload page insted?
+    return send_from_directory(app.static_folder, "index.html")
+
+# Serve React assets + handle client-side routing
+@app.route("/<path:path>")
+def serve_assets(path):
+    return send_from_directory(app.static_folder, path)
 
 # need to add a message that sends to front end if there are file issues , rn it just says that the files were uploaded
 def get_courses_from_req(request):
