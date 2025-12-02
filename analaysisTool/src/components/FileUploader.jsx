@@ -84,7 +84,7 @@ export default function FileUploader() {
     formData.append("numOfFiles", selectedFiles.length);
     try {
       // local host temp till we get a domain name and hosting 
-      const res = await fetch("http://127.0.0.1:5000/process", {
+      const res = await fetch("process", {
         method:"POST",
         body: formData
       });
