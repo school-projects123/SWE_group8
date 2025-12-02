@@ -6,6 +6,7 @@ export default function Upload() {
     const [dataLoaded, setDataLoaded] = useState(false);
 
     let defaultFilename = '21755561_Pretend_Essay_Assignment.xls';
+    //let defaultFilename = 'Master_Spreadsheet.xlsx'; // this will be the file that has to be used when this is done
 
     function processExcelData(arrayBuffer) {
         const data = new Uint8Array(arrayBuffer);
@@ -13,7 +14,7 @@ export default function Upload() {
         const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
         const MAX_ROWS = 15; // show only the first 15 rows, just in case this is a large file
-        // plus all this is displayed on the spreadsheet page anyway
+        // plus all this is displayed on the spreadsheet page, so if its here too then that would be redundant
 
         let userDiv = document.getElementById('userDiv');
         if (!userDiv) {
@@ -34,7 +35,7 @@ export default function Upload() {
             + '<th>Last</th><th>First</th><th>Email</th><th>Turnitin ID</th><th>Title</th><th>Words</th><th>Date</th><th>Grade</th><th>Sim</th>'
             + '</tr>';
 
-        jsonData.slice(0, MAX_ROWS).forEach(user => {
+        jsonData.slice(0, MAX_ROWS).forEach(user => { // this does have to be IDENTICAL to the input data columns
             table += `<tr>
                 <td>${user['Last Name'] || ''}</td>
                 <td>${user['First Name'] || ''}</td>
@@ -248,7 +249,7 @@ export default function Upload() {
             return;
         }
 
-        loadChartJs(() => {
+        loadChartJs(() => { // this is for the scatter plot, which WON'T work UNLESS it saves the word count for the essay, BUT perhaps it could graph essay score vs exam score/ overall score?
             new Chart(canvas, {
                 type: 'scatter',
                 data: {
@@ -374,11 +375,9 @@ export default function Upload() {
                     <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px" }}>
                         <h2>Report Page/ Data Analytics</h2>
                         <p>As this is jsx, that means .html still doesn't work, so there is no point leaving that here, plus the links show up at the top, or at least they do for me.</p>
-                        <h3>Explanatory Text</h3>
-                        <p>There is different text on the version of this file found on the <a href="https://github.com/school-projects123/SWE_group8/tree/Special-Branch">Special-Branch</a>, which can be viewed there. This version is being worked on in the <a href="https://github.com/school-projects123/SWE_group8/tree/Report_branch">Report_branch</a>.</p>
-                        <p>The data from the xls(x) files can be read in by the javascript, which creates a table, a bar chart from the data (where the scores are shown with bars, the highest score in green, lowest in red, and the rest in yellow), and a plot (where the word counts are plotted against the scores) (all shown in this web-page).</p> 
-                        <p>The plan is to gradually align this file (analytics.html) with the design of the file upload file from the other branch (in the process making it look decent).</p>
-                        <p>Note: if you typed a file name into the prompt and it is now showing nothing, press enter with the text box blank (so it uses the default) or copy and paste '21755561_Pretend_Essay_Assignment.xls' into the prompt. You can also try 'gc_PS5906_25_SANDPIT_fullgc_2025-10-07-13-12-38.xls' to compare.</p>
+                        <p>I think this section would serve well to list students, which you can click to view specific data for them.</p>
+                        <div className="studentList"></div> {/* a table or list, or something else? */}
+
                     </div>
                     <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
                         <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
