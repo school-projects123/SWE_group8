@@ -3,225 +3,113 @@ import { useEffect, useRef, useState } from 'react';
 export default function Upload() {
     const pieChart1Ref = useRef(null);
     const pieChart2Ref = useRef(null);
-    const [dataLoaded, setDataLoaded] = useState(false);
+    const [jsonData, setJsonData] = useState([]);
+    const defaultFilename = '21755561_Pretend_Essay_Assignment.xls';
+    //const defaultFilename = 'Master_Spreadsheet.xlsx'; // need this to work later
 
-    let defaultFilename = '21755561_Pretend_Essay_Assignment.xls';
-    //let defaultFilename = 'Master_Spreadsheet.xlsx'; // this will be the file that has to be used when this is done
+    const FIELDS = ['Last Name','First Name','Email','Turnitin User ID','Title','Word Count','Date Uploaded','Grade','Similarity Score'];
+    const MAX_ROWS = 15;
 
+    // Utility to load external scripts
+    function loadScript(src, callback) {
+        if (document.querySelector(`script[src="${src}"]`)) return callback();
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    // Load XLSX and Chart.js
+    function loadXlsxJs(callback) { loadScript('xlsx.full.min.js', callback); }
+    function loadChartJs(callback) { loadScript('https://cdn.jsdelivr.net/npm/chart.js', callback); }
+
+    // Helper to create a chart
+    function createChart(ctx, type, labels, data, options = {}) {
+        if (!ctx || !window.Chart) return;
+        new Chart(ctx, {
+            type,
+            data: { labels, datasets: [{ data, ...options.datasetOptions }] },
+            options
+        });
+    }
+
+    // Process Excel data
     function processExcelData(arrayBuffer) {
         const data = new Uint8Array(arrayBuffer);
         const workbook = XLSX.read(data, {type: 'array'});
-        const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        setJsonData(sheetData.slice(0, MAX_ROWS)); // only first 15 rows for display
 
-        const MAX_ROWS = 15; // show only the first 15 rows, just in case this is a large file
-        // plus all this is displayed on the spreadsheet page, so if its here too then that would be redundant
+        renderBarChart(sheetData);
+        plotWordCountVsScoreFromTable(sheetData);
+    }
 
-        let userDiv = document.getElementById('userDiv');
-        if (!userDiv) {
-            userDiv = document.createElement('div');
-            userDiv.id = 'userDiv';
-            document.body.appendChild(userDiv);
-        }
-        // create a compact container for the table
-        const tableContainer = document.createElement('div');
-        tableContainer.style.maxHeight = '220px';
-        tableContainer.style.maxWidth = '100%';
-        tableContainer.style.overflow = 'auto';
-        tableContainer.style.fontSize = '12px';
-        tableContainer.style.lineHeight = '1.2';
-        tableContainer.style.marginBottom = '8px';
-
-        let table = '<table style="border-collapse:collapse;font-size:12px" border="1"><tr>'
-            + '<th>Last</th><th>First</th><th>Email</th><th>Turnitin ID</th><th>Title</th><th>Words</th><th>Date</th><th>Grade</th><th>Sim</th>'
-            + '</tr>';
-
-        jsonData.slice(0, MAX_ROWS).forEach(user => { // this does have to be IDENTICAL to the input data columns
-            table += `<tr>
-                <td>${user['Last Name'] || ''}</td>
-                <td>${user['First Name'] || ''}</td>
-                <td>${user.Email || ''}</td>
-                <td>${user['Turnitin User ID'] || ''}</td>
-                <td>${(user.Title || '').toString().slice(0, 30)}</td>
-                <td>${user['Word Count'] || ''}</td>
-                <td>${user['Date Uploaded'] || ''}</td>
-                <td>${user.Grade || ''}</td>
-                <td>${user['Similarity Score'] || ''}</td>
-            </tr>`;
+    // Load file data
+    function loadData(filename) {
+        loadXlsxJs(() => {
+            fetch(filename)
+                .then(res => { if (!res.ok) throw new Error('Network error'); return res.arrayBuffer(); })
+                .then(arrayBuffer => processExcelData(arrayBuffer))
+                .catch(err => console.error('Error fetching user data:', err));
         });
-        table += '</table>';
-        tableContainer.innerHTML = table;
+    }
 
-        if (jsonData.length > MAX_ROWS) { // if there are more rows, add 'show all'
-            const more = document.createElement('div');
-            more.style.fontSize = '12px';
-            more.style.marginTop = '4px';
-            const btn = document.createElement('button');
-            btn.textContent = `Show all (${jsonData.length})`;
-            btn.style.fontSize = '12px';
-            btn.onclick = () => {
-                tableContainer.innerHTML = '<table style="border-collapse:collapse;font-size:12px" border="1"><tr>'
-                    + '<th>Last</th><th>First</th><th>Email</th><th>Turnitin ID</th><th>Title</th><th>Words</th><th>Date</th><th>Grade</th><th>Sim</th>'
-                    + '</tr>' + jsonData.map(user => `<tr>
-                        <td>${user['Last Name'] || ''}</td>
-                        <td>${user['First Name'] || ''}</td>
-                        <td>${user.Email || ''}</td>
-                        <td>${user['Turnitin User ID'] || ''}</td>
-                        <td>${(user.Title || '').toString().slice(0, 60)}</td>
-                        <td>${user['Word Count'] || ''}</td>
-                        <td>${user['Date Uploaded'] || ''}</td>
-                        <td>${user.Grade || ''}</td>
-                        <td>${user['Similarity Score'] || ''}</td>
-                    </tr>`).join('') + '</table>';
-                more.remove();
-            };
-            more.appendChild(btn);
-            tableContainer.appendChild(more);
-        }
-
-        userDiv.innerHTML = ''; // replace previous content, clear it
-        userDiv.appendChild(tableContainer);
-
-        // compact chart area
-        const chartDiv = document.getElementById('chartDiv') || Object.assign(
-            document.body.appendChild(document.createElement('div')),
-            {id: 'chartDiv'}
-        );
-        chartDiv.innerHTML = ''; // clear previous chart, this used to cause issues
-
-        // create a smaller canvas
-        const canvas = Object.assign(document.createElement('canvas'), { id: 'userScoreChart' });
-        canvas.style.width = '480px';
-        canvas.style.maxWidth = '80%'; // WIDTH FOR THE BAR CHART!
+    // Render user score bar chart
+    function renderBarChart(data) {
+        const chartDiv = document.getElementById('chartDiv') || Object.assign(document.body.appendChild(document.createElement('div')), {id: 'chartDiv'});
+        chartDiv.innerHTML = '';
+        const canvas = Object.assign(document.createElement('canvas'), { id: 'userScoreChart', width: 480, height: 240 });
+        canvas.style.width = '30%';
         canvas.style.height = '240px';
-        canvas.width = 480;
-        canvas.height = 240;
         chartDiv.appendChild(canvas);
 
-        // prepare data for chart (robust parsing!)
-        const users = jsonData
-            .map(u => ({ name: `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim(), grade: parseFloat(u.Grade) }))
+        const users = data.map(u => ({ name: `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim(), grade: parseFloat(u.Grade) }))
             .filter(u => !isNaN(u.grade));
-
         const labels = users.map(u => u.name || 'Unknown');
         const scores = users.map(u => u.grade);
-        const maxScore = scores.length ? Math.max(...scores) : 0;
-        const minScore = scores.length ? Math.min(...scores) : 0;
+        const maxScore = Math.max(...scores);
+        const minScore = Math.min(...scores);
 
         const backgroundColours = scores.map(score => {
             if (score === maxScore) return 'green';
             if (score === minScore) return 'red';
-            return 'rgba(255, 206, 86, 0.9)'; // muted yellow for middling scores
+            return 'rgba(255, 206, 86, 0.9)';
         });
 
         loadChartJs(() => {
-            // ensure the chart canvas uses 80% of its container width
-            canvas.style.width = '30%';
-            canvas.style.maxWidth = '30%';
-
-            new Chart(canvas, {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: 'User Scores',
-                        data: scores,
-                        backgroundColor: backgroundColours,
-                        borderColor: 'black',
-                        borderWidth: 1
-                    }]
-                },
+            createChart(canvas.getContext('2d'), 'bar', labels, scores, { // this is for: the bar chart
+                datasetOptions: { backgroundColor: backgroundColours, borderColor: 'black', borderWidth: 1 },
                 options: {
                     indexAxis: 'x',
-                    responsive: true, // allow chart to scale to canvas style width
-                    maintainAspectRatio: false, // use the canvas height/width as-is
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         x: { ticks: { maxRotation: 45, minRotation: 0 }, grid: { display: false } },
                         y: { beginAtZero: true, ticks: { stepSize: 10 } }
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { bodyFont: { size: 12 } }
-                    }
+                    plugins: { legend: { display: false }, tooltip: { bodyFont: { size: 12 } } }
                 }
             });
         });
     }
 
-    function getFilenameFromTopBarName() {
-        const input = document.getElementById('fileInput');
-        return (input && input.value.trim()) ? input.value.trim() : defaultFilename; // returns the default if blank
-    }
+    // Render scatter plot of Word Count vs Score
 
-    function getFilenameFromTopBarSelect() {
-        const uploadInput = document.getElementById('uploadInput');
-        if (uploadInput && uploadInput.files && uploadInput.files.length > 0) {
-            const file = uploadInput.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                loadXlsxJs(() => processExcelData(e.target.result));
-            };
-            reader.readAsArrayBuffer(file);
-            return null;
-        }
-        return defaultFilename;
-    }
-
-    function loadData(filename) {
-        loadXlsxJs(() => { // this will have to be rewritten, also its best to do this only once as it is currently called
-            fetch(filename) // more than once, and once this is a backend call that will make it slow and also simply wrong
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.arrayBuffer();
-                })
-                .then(arrayBuffer => processExcelData(arrayBuffer))
-                .catch(error => console.error('Error fetching user data:', error));
-        });
-    }
-
-    // Ensure Chart.js is loaded before using it.
-    function loadChartJs(callback) {
-        if (window.Chart) return callback();
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/chart.js'; // its easier to load it from CDN because if you try loading it locally while its hosted then it can't access it
-        script.onload = callback;
-        document.head.appendChild(script);
-    }
-
-    function loadXlsxJs(callback) {
-        if (window.XLSX) return callback();
-        const script = document.createElement('script');
-        script.src = 'xlsx.full.min.js';
-        script.onload = callback;
-        document.head.appendChild(script);
-    }
-
-    function plotWordCountVsScoreFromTable() {
-        const table = document.querySelector('#userDiv table');
-        if (!table) return;
-
-        const rows = Array.from(table.rows).slice(1); // skip header
-        const points = [];
-        const labels = [];
-
-        rows.forEach(row => {
-            const wordCell = row.cells[5];
-            const gradeCell = row.cells[7];
-            const firstCell = row.cells[1];
-            const lastCell = row.cells[0];
-
-            if (!wordCell || !gradeCell) return;
-
-            const wordText = wordCell.textContent.trim().replace(/,/g, '');
-            const gradeText = gradeCell.textContent.trim().replace(/,/g, '');
-
-            const wordNum = parseFloat(wordText);
-            const gradeNum = parseFloat(gradeText);
-
-            if (!isNaN(wordNum) && !isNaN(gradeNum)) {
-                points.push({ x: wordNum, y: gradeNum });
-                labels.push(`${firstCell ? firstCell.textContent.trim() : ''} ${lastCell ? lastCell.textContent.trim() : ''}`.trim());
-            }
-        });
+    function plotWordCountVsScoreFromTable(data) {
+        const points = data
+            .map(u => {
+                const wordNum = parseFloat(u['Word Count'] || '');
+                const gradeNum = parseFloat(u.Grade || '');
+                if (!isNaN(wordNum) && !isNaN(gradeNum)) {
+                    return {
+                        x: wordNum,
+                        y: gradeNum,
+                        label: `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim() || 'Unknown'
+                    };
+                }
+                return null;
+            })
+            .filter(Boolean);
 
         const scatterDiv = document.getElementById('scatterDiv') || Object.assign(
             document.body.appendChild(document.createElement('div')),
@@ -229,33 +117,30 @@ export default function Upload() {
         );
         scatterDiv.innerHTML = ''; // clear previous
 
-        // container to control the visual width of the chart, this helps somewhat
         const container = document.createElement('div');
         container.style.width = '150%';
         container.style.margin = '0 auto';
-        container.style.maxWidth = '480px';   // <-- cap to 480px
-        // container.style.maxWidth = '60%';  // <-- or cap to 60% of parent (uncomment preferred)
+        container.style.maxWidth = '480px';
         scatterDiv.appendChild(container);
 
         const canvas = Object.assign(document.createElement('canvas'), { id: 'wordcountScoreChart' });
-        // make the canvas fill the container; Chart.js will size to the parent when responsive:true
         canvas.style.width = '80%';
-        canvas.style.height = '320px'; // visual height; Chart will respect this when maintainAspectRatio:false
+        canvas.style.height = '320px'; // visual height
         container.appendChild(canvas);
 
-        if (points.length === 0) { // no (valid) data
+        if (!points.length) { // no (valid) data
             scatterDiv.appendChild(document.createTextNode('No valid Word Count / Score pairs to plot.'));
             return;
         }
 
-        loadChartJs(() => { // this is for the scatter plot, which WON'T work UNLESS it saves the word count for the essay, BUT perhaps it could graph essay score vs exam score/ overall score?
-            new Chart(canvas, {
+        loadChartJs(() => {
+            new Chart(canvas.getContext('2d'), {
                 type: 'scatter',
                 data: {
                     datasets: [{
                         label: 'Word Count vs Score',
                         data: points,
-                        backgroundColor: 'rgba(78, 78, 78, 0.9)',
+                        backgroundColor: 'rgba(78,78,78,0.9)',
                         borderColor: 'rgba(0,0,0,0.6)',
                         pointRadius: 6
                     }]
@@ -271,11 +156,8 @@ export default function Upload() {
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    const idx = context.dataIndex;
-                                    const lbl = labels[idx] || '';
-                                    const x = context.raw.x;
-                                    const y = context.raw.y;
-                                    return lbl ? `${lbl}: (${x}, ${y})` : `(${x}, ${y})`;
+                                    const point = context.raw;
+                                    return `${point.label}: (${point.x}, ${point.y})`;
                                 }
                             }
                         }
@@ -285,91 +167,42 @@ export default function Upload() {
         });
     }
 
-    useEffect(() => { // this does't read data, YET, TO DO
-        // or this should show student specific records here instead of pie charts?
+    // Render table in JSX
+    const renderTableJSX = () => (
+        <table border="1" style={{ borderCollapse: 'collapse', fontSize: 12, lineHeight: 1.2 }}>
+            <thead>
+                <tr>{FIELDS.map(f => <th key={f}>{f}</th>)}</tr>
+            </thead>
+            <tbody>
+                {jsonData.map((user, i) => (
+                    <tr key={i}>
+                        {FIELDS.map(f => <td key={f}>{f === 'Title' ? (user[f] || '').toString().slice(0,30) : user[f] || ''}</td>)}
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+
+    // Initial load
+    useEffect(() => {
+        loadData(defaultFilename);
+
+        // Setup pie charts
         loadChartJs(() => {
-            const Chart = window.Chart;
-            const ctx1 = pieChart1Ref.current && pieChart1Ref.current.getContext('2d');
-            if (ctx1 && Chart) {
-                new Chart(ctx1, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Grade A', 'Grade B', 'Grade C'],
-                        datasets: [{
-                            data: [50, 20, 40],
-                            backgroundColor: ['#ff6384', '#36a2eb', '#58ff56'],
-                        }]
-                    }
-                });
-            }
-            const ctx2 = pieChart2Ref.current && pieChart2Ref.current.getContext('2d');
-            if (ctx2 && Chart) {
-                new Chart(ctx2, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Grade A', 'Grade B', 'Grade C'],
-                        datasets: [{
-                            data: [30, 99, 20],
-                            backgroundColor: ['#ff6384', '#36a2eb', '#58ff56'],
-                        }]
-                    }
-                });
-            }
-        });
-
-        // Setup event listeners for topBar (for loading files in)
-        // these will be REMOVED when the backend is merged and i have that...
-        const loadButton = document.getElementById('loadButton');
-        if (loadButton) {
-            loadButton.addEventListener('click', () => {
-                const filename = getFilenameFromTopBarName();
-                loadData(filename);
+            createChart(pieChart1Ref.current?.getContext('2d'), 'pie', ['Grade A','Grade B','Grade C'], [50,20,40], {
+                datasetOptions: { backgroundColor: ['#ff6384','#36a2eb','#58ff56'] }
             });
-        }
-        const uploadInput = document.getElementById('uploadInput');
-        if (uploadInput) {
-            uploadInput.addEventListener('change', () => {
-                const filename = getFilenameFromTopBarSelect();
-                if (filename) loadData(filename);
+            createChart(pieChart2Ref.current?.getContext('2d'), 'pie', ['Grade A','Grade B','Grade C'], [30,99,20], {
+                datasetOptions: { backgroundColor: ['#ff6384','#36a2eb','#58ff56'] }
             });
-        }
-        loadData(defaultFilename); // either way this loads the default data on first load
-
-        // Watch for the main user-score chart being created and trigger the wordcount vs score plot.
-        // this ideally too ought to go
-        const userChartObserver = new MutationObserver(() => {
-            const mainCanvas = document.getElementById('userScoreChart');
-            if (mainCanvas && !mainCanvas.dataset.wordcountPlotted) {
-                plotWordCountVsScoreFromTable();
-                mainCanvas.dataset.wordcountPlotted = '1';
-            }
         });
-
-        userChartObserver.observe(document.body, { childList: true, subtree: true });
-
-        // If the chart already exists at script load (e.g. on a late include), plot immediately.
-        const existing = document.getElementById('userScoreChart');
-        if (existing && !existing.dataset.wordcountPlotted) {
-            plotWordCountVsScoreFromTable();
-            existing.dataset.wordcountPlotted = '1';
-        }
     }, []);
 
     return (
         <div style={{ display: "flex", flexDirection: "column", boxSizing: "border-box", overflow: "hidden" }}>
-            {/* Note: meta/title elements belong in the document head; use react-helmet if needed */}
             <noscript>Please enable Javascript to run this app.</noscript>
-            <div id="topBar" style={{ display: "flex", width: "100%", backgroundColor: "#2563eb", maxWidth: "100%" }}>
-                <div style={{ flex: 1, textAlign: "center", padding: "5px" }}>
-                    <label htmlFor="fileInput">Enter filename (or leave blank for default): </label>
-                    <input type="text" id="fileInput" placeholder="21755561_Pretend_Essay_Assignment.xls" />
-                    <button id="loadButton" style={{ marginLeft: "5px" }}>Load Data</button>
-                </div>
-                <div style={{ flex: 1, textAlign: "center", padding: "5px" }}>
-                    <label htmlFor="uploadInput">Or select a file: </label>
-                    <input type="file" id="uploadInput" style={{ display: "none" }} />
-                    <button id="browseButton" onClick={() => document.getElementById('uploadInput').click()}>Browse...</button>
-                </div>
+            <div id="topBar" style={{ display: "flex", width: "100%", backgroundColor: "#2563eb", maxWidth: "100%", textAlign: "center", boxSizing: "border-box" }}>
+                <p>Welcome to the report page.</p>
             </div>
             <div className="display" style={{ height: "100%", flex: 1, backgroundColor: "lightblue", maxWidth: "100%" }}>
                 <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
@@ -392,7 +225,7 @@ export default function Upload() {
                             <div style={{ width: "80%", backgroundColor: "#b6b6b6", padding: "20px", boxSizing: "border-box" }}>
                                 <h2>Actual Charts</h2>
                                 <div id="chartDiv"></div>
-                                <div id="userDiv"></div>
+                                <div id="userDiv">{renderTableJSX()}</div>
                                 <div id="scatterDiv"></div>
                             </div>
                         </div>
@@ -402,9 +235,9 @@ export default function Upload() {
             <div id="bottomBar" style={{ display: "flex", width: "100%", backgroundColor: "lightgray" }}>
                 <div style={{ flex: 1, textAlign: "center" }}>
                     <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", justifyContent: "center", gap: "20px" }}>
-                    <li><a href="https://github.com/school-projects123/SWE_group8">GitHub Repository</a></li>
-                    <li><a href="https://github.com/school-projects123/SWE_group8/tree/Special-Branch">(Special Branch)</a></li>
-                    <li><a href="https://github.com/school-projects123/SWE_group8/tree/Report_branch">(Report Branch)</a></li>
+                        <li><a href="https://github.com/school-projects123/SWE_group8">GitHub Repository</a></li>
+                        <li><a href="https://github.com/school-projects123/SWE_group8/tree/Special-Branch">(Special Branch)</a></li>
+                        <li><a href="https://github.com/school-projects123/SWE_group8/tree/Report_branch">(Report Branch)</a></li>
                     </ul>
                     <div style={{ marginTop: "8px", fontSize: "0.9em", color: "#333" }}>
                         All rights reserved. By who, I do not know.
@@ -412,5 +245,5 @@ export default function Upload() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
