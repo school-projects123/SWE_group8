@@ -4,10 +4,7 @@ export default function Upload() {
     const pieChart1Ref = useRef(null);
     const pieChart2Ref = useRef(null);
     const [jsonData, setJsonData] = useState([]);
-    //const defaultFilename = '21755561_Pretend_Essay_Assignment.xls';
-    const defaultFilename = 'Master_Spreadsheet.xlsx'; // need this to work later
-
-    //const FIELDS = ['Last Name','First Name','Email','Turnitin User ID','Title','Word Count','Date Uploaded','Grade','Similarity Score'];
+    const defaultFilename = 'Master_Spreadsheet.xlsx';
     const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course'];
 
     // Utility to load external scripts
