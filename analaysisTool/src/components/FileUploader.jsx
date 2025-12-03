@@ -38,6 +38,7 @@ export default function FileUploader() {
     return { filename: fileObj.name, data: [] };
   }
 
+  // should probubly limit the size of files that can be uploaded? or the number of files or both
   //main part of the page with the upload button and file selection area
   function handleFileSelect(e) {
     const fileList = e.target.files;
@@ -67,6 +68,34 @@ export default function FileUploader() {
   //this function removes a selected file from the list of previously selected files
   function removeFile(index) {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  }
+
+  // this function is sending the Files to backend
+  // is async because it will probubly take time to send files and this allows the page to stay responsive
+  async function sendInfo(){
+    // sending file content as form data because json would be too slow
+    const formData = new FormData();
+
+    selectedFiles.forEach((fileObj, i) => {
+        formData.append(`file_${i}`, fileObj.file);
+        //formData.append(`course_${i}`,fileObj.course || "") //not yet implemented course selection
+
+    });
+    formData.append("numOfFiles", selectedFiles.length);
+    try {
+      // local host temp till we get a domain name and hosting 
+      const res = await fetch("process", {
+        method:"POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      console.log("Backend responce:", data);
+      // not showing up because it is called after the await because browsers block popups outside user-click events
+      alert("Upload complete! (output on console)");   
+    } catch (err) {
+      console.error("error sending to backend:", err);
+    }
   }
 
   //Style and structure of the upload page
@@ -149,7 +178,8 @@ export default function FileUploader() {
               <input type="file" multiple onChange={handleFileSelect} style={{display:'none'}} />
           </label>
           <button
-            onClick={showLoading}
+          //maybe in next commit make an handleUploadClick fuction so its cleaner
+            onClick={() => {showLoading(); sendInfo();}}
             style={{
               background: '#19306a',
               color: '#fff',
