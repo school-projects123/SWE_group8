@@ -4,11 +4,11 @@ export default function Upload() {
     const pieChart1Ref = useRef(null);
     const pieChart2Ref = useRef(null);
     const [jsonData, setJsonData] = useState([]);
-    const defaultFilename = '21755561_Pretend_Essay_Assignment.xls';
-    //const defaultFilename = 'Master_Spreadsheet.xlsx'; // need this to work later
+    //const defaultFilename = '21755561_Pretend_Essay_Assignment.xls';
+    const defaultFilename = 'Master_Spreadsheet.xlsx'; // need this to work later
 
-    const FIELDS = ['Last Name','First Name','Email','Turnitin User ID','Title','Word Count','Date Uploaded','Grade','Similarity Score'];
-    const MAX_ROWS = 15;
+    //const FIELDS = ['Last Name','First Name','Email','Turnitin User ID','Title','Word Count','Date Uploaded','Grade','Similarity Score'];
+    const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course'];
 
     // Utility to load external scripts
     function loadScript(src, callback) {
@@ -38,10 +38,10 @@ export default function Upload() {
         const data = new Uint8Array(arrayBuffer);
         const workbook = XLSX.read(data, {type: 'array'});
         const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        setJsonData(sheetData.slice(0, MAX_ROWS)); // only first 15 rows for display
+        setJsonData(sheetData.slice(0, 15)); // only first 15 rows for display
 
         renderBarChart(sheetData);
-        plotWordCountVsScoreFromTable(sheetData);
+        plotEssayVsExamFromTable(sheetData);
     }
 
     // Load file data
@@ -63,9 +63,9 @@ export default function Upload() {
         canvas.style.height = '240px';
         chartDiv.appendChild(canvas);
 
-        const users = data.map(u => ({ name: `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim(), grade: parseFloat(u.Grade) }))
+        const users = data.map(u => ({ name: `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim(), grade: parseFloat(u['Essay Score (Raw)'] || '') }))
             .filter(u => !isNaN(u.grade));
-        const labels = users.map(u => u.name || 'Unknown');
+        const labels = users.map(u => u.name);
         const scores = users.map(u => u.grade);
         const maxScore = Math.max(...scores);
         const minScore = Math.min(...scores);
@@ -95,11 +95,11 @@ export default function Upload() {
 
     // Render scatter plot of Word Count vs Score
 
-    function plotWordCountVsScoreFromTable(data) {
+    function plotEssayVsExamFromTable(data) {
         const points = data
             .map(u => {
-                const wordNum = parseFloat(u['Word Count'] || '');
-                const gradeNum = parseFloat(u.Grade || '');
+                const wordNum = parseFloat(u['Essay Score (Raw)'] || '');
+                const gradeNum = parseFloat(u['Exam Score (Raw)'] || '');
                 if (!isNaN(wordNum) && !isNaN(gradeNum)) {
                     return {
                         x: wordNum,
@@ -129,7 +129,7 @@ export default function Upload() {
         container.appendChild(canvas);
 
         if (!points.length) { // no (valid) data
-            scatterDiv.appendChild(document.createTextNode('No valid Word Count / Score pairs to plot.'));
+            scatterDiv.appendChild(document.createTextNode('No valid data for essay vs exam score scatter plot.'));
             return;
         }
 
@@ -138,7 +138,7 @@ export default function Upload() {
                 type: 'scatter',
                 data: {
                     datasets: [{
-                        label: 'Word Count vs Score',
+                        label: 'Essay Scores vs Exam Scores',
                         data: points,
                         backgroundColor: 'rgba(78,78,78,0.9)',
                         borderColor: 'rgba(0,0,0,0.6)',
@@ -148,8 +148,8 @@ export default function Upload() {
                 options: {
                     responsive: true,
                     scales: {
-                        x: { title: { display: true, text: 'Word Count' }, beginAtZero: true },
-                        y: { title: { display: true, text: 'Score' }, beginAtZero: true }
+                        x: { title: { display: true, text: 'Essay Score' }, beginAtZero: true },
+                        y: { title: { display: true, text: 'Exam Score' }, beginAtZero: true }
                     },
                     plugins: {
                         legend: { display: false },
@@ -187,16 +187,26 @@ export default function Upload() {
     useEffect(() => {
         loadData(defaultFilename);
 
-        // Setup pie charts
+        // for some reason the scatter plot doesn't load without this call
         loadChartJs(() => {
-            createChart(pieChart1Ref.current?.getContext('2d'), 'pie', ['Grade A','Grade B','Grade C'], [50,20,40], {
-                datasetOptions: { backgroundColor: ['#ff6384','#36a2eb','#58ff56'] }
-            });
-            createChart(pieChart2Ref.current?.getContext('2d'), 'pie', ['Grade A','Grade B','Grade C'], [30,99,20], {
-                datasetOptions: { backgroundColor: ['#ff6384','#36a2eb','#58ff56'] }
-            });
         });
     }, []);
+
+    const [selectedIndex, setSelectedIndex] = useState(0);
+
+    // ensure selectedIndex is valid when jsonData changes
+    useEffect(() => {
+        if (!jsonData || !jsonData.length) {
+            setSelectedIndex(0);
+            return;
+        }
+        if (selectedIndex >= jsonData.length) setSelectedIndex(0);
+    }, [jsonData, selectedIndex]);
+
+    const studentNames = jsonData.map((u, i) => {
+        const name = `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim();
+        return name || `Student ${i + 1}`;
+    });
 
     return (
         <div style={{ display: "flex", flexDirection: "column", boxSizing: "border-box", overflow: "hidden" }}>
@@ -208,19 +218,58 @@ export default function Upload() {
                 <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
                     <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px" }}>
                         <h2>Report Page/ Data Analytics</h2>
-                        <p>As this is jsx, that means .html still doesn't work, so there is no point leaving that here, plus the links show up at the top, or at least they do for me.</p>
-                        <p>I think this section would serve well to list students, which you can click to view specific data for them.</p>
-                        <div className="studentList"></div> {/* a table or list, or something else? */}
+                        <p>Please select the student you wish to see analytics for.</p>
+
+                        {/* dropdown select for student list */}
+                        <div className="studentList">
+                            <label htmlFor="studentSelect" style={{ color: "#fff", display: "block", marginBottom: 8 }}>Students</label>
+                            <select
+                                id="studentSelect"
+                                value={selectedIndex}
+                                onChange={(e) => setSelectedIndex(parseInt(e.target.value, 10))}
+                                style={{ width: "100%", padding: "6px", borderRadius: 4 }}
+                            >
+                                {/* more error handing for nearly impossible cases, but necesary for edge cases */}
+                                {studentNames.length === 0 ? ( 
+                                    <option value={0} disabled>No students loaded</option>
+                                ) : (
+                                    studentNames.map((n, i) => <option key={i} value={i}>{n}</option>)
+                                )}
+                            </select>
+                        </div>
 
                     </div>
                     <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
                         <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
                             <div style={{ width: "20%", backgroundColor: "#b6b6b6", padding: "10px", boxSizing: "border-box" }}>
-                                <h2 style={{ margin: 0 }}>Grades</h2>
-                                <h3>Course 1</h3>
-                                <canvas ref={pieChart1Ref} id="pieChart1" width="200" height="200"></canvas>
-                                <h3>Course 2</h3>
-                                <canvas ref={pieChart2Ref} id="pieChart2" width="200" height="200"></canvas>
+                                <h2 style={{ margin: 0 }}>Student View</h2>
+                                <p>Here you can see the details for the selected student.</p>
+
+                                {/* table flipping, every field is displayed*/}
+                                <div className="studentDetails">
+                                    {jsonData.length === 0 ? (
+                                        <div>No student data loaded yet.</div>
+                                    ) : (
+                                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                                            <tbody>
+                                                {FIELDS.map(field => (
+                                                    <tr key={field} style={{ borderBottom: "1px solid #ccc" }}>
+                                                        <th style={{ textAlign: "left", padding: "6px", verticalAlign: "top", width: "45%", background: "#e9e9e9", color: "#000" }}>{field}</th>
+                                                        <td style={{ padding: "6px" }}>
+                                                            {(() => {
+                                                                const student = jsonData[selectedIndex] || {};
+                                                                const val = student[field];
+                                                                if (val === undefined || val === null) return '';
+                                                                return typeof val === 'object' ? JSON.stringify(val) : String(val);
+                                                            })()}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    )}
+                                </div>
+
                             </div>
                             <div style={{ width: "80%", backgroundColor: "#b6b6b6", padding: "20px", boxSizing: "border-box" }}>
                                 <h2>Actual Charts</h2>
