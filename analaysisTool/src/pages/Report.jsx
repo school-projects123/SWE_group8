@@ -16,7 +16,7 @@ export default function Upload() {
         document.head.appendChild(script);
     }
 
-    // Load XLSX and Chart.js
+    // XLSX and Chart.js are required for this page, xlsx as this entire file is geared around excel files (not csv or json)
     function loadXlsxJs(callback) { loadScript('xlsx.full.min.js', callback); }
     function loadChartJs(callback) { loadScript('https://cdn.jsdelivr.net/npm/chart.js', callback); }
 
@@ -30,24 +30,22 @@ export default function Upload() {
         });
     }
 
-    // Process Excel data
-    function processExcelData(arrayBuffer) {
-        const data = new Uint8Array(arrayBuffer);
-        const workbook = XLSX.read(data, {type: 'array'});
-        const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        setJsonData(sheetData.slice(0, 15)); // only first 15 rows for display
-
-        renderBarChart(sheetData);
-        plotEssayVsExamFromTable(sheetData);
-    }
-
-    // Load file data
-    function loadData(filename) {
-        loadXlsxJs(() => {
-            fetch(filename)
-                .then(res => { if (!res.ok) throw new Error('Network error'); return res.arrayBuffer(); })
-                .then(arrayBuffer => processExcelData(arrayBuffer))
-                .catch(err => console.error('Error fetching user data:', err));
+    // load file data and process Excel in one function, much better
+    function loadData(filename) { // this needs to get it from the back end!
+        loadXlsxJs(async () => {
+            try {
+                const res = await fetch(filename);
+                if (!res.ok) throw new Error('Network error');
+                const arrayBuffer = await res.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                setJsonData(sheetData.slice(0, 15)); // only first 15 rows for display
+                renderBarChart(sheetData);
+                plotEssayVsExamFromTable(sheetData);
+            } catch (err) {
+                console.error('Error fetching or processing user data:', err);
+            }
         });
     }
 
