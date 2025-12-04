@@ -5,7 +5,7 @@ export default function Upload() {
     const pieChart2Ref = useRef(null);
     const [jsonData, setJsonData] = useState([]);
     const defaultFilename = 'Master_Spreadsheet.xlsx';
-    const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course'];
+    const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the excel sheet
 
     // Utility to load external scripts
     function loadScript(src, callback) {
