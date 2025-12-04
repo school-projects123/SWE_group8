@@ -194,6 +194,7 @@ def get_all_courses(info:dict):
 # funtion to process input from react frontend
 
     # store latest master spreadsheet in memory so Spreadsheet page can fetch it
+# store latest master spreadsheet in memory so Spreadsheet page can fetch it
 last_master_columns = []
 last_master_rows = []
 
@@ -225,17 +226,24 @@ def process_file():
         elif analytics_df is None and detect_analytics(df):
             analytics_df = df
 
+    # reset master
     last_master_columns = []
     last_master_rows = []
 
     if gradebook_df is not None and analytics_df is not None:
         master_df = build_master_dataframe(gradebook_df, analytics_df)
+
+        # 🔹 convert NaN → None so JSON is valid for the browser
+        master_df = master_df.astype(object).where(pd.notnull(master_df), None)
+
         last_master_columns = master_df.columns.tolist()
         last_master_rows = master_df.to_dict(orient="records")
+
+        print("Built master spreadsheet with", len(last_master_rows), "rows.")
     else:
         print("Could not detect gradebook/analytics files.")
 
-    # keep the old "courses" output so existing frontend code doesn't break
+    # keep the old "courses" style output as well
     return jsonify({
         "courses": {
             course: [
@@ -248,14 +256,14 @@ def process_file():
         "masterRows": last_master_rows
     })
 
-
-# NEW: endpoint the Spreadsheet.jsx page will call
 @app.route("/master", methods=["GET"])
 def get_master():
+    # This is what Spreadsheet.jsx calls
     return jsonify({
         "masterColumns": last_master_columns,
         "masterRows": last_master_rows
     })
+
 # Serve React assets + handle client-side routing should add
 @app.route("/<path:path>")
 def index(path):
