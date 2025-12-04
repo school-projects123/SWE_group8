@@ -199,19 +199,23 @@ def process_file():
     #
     # df.to_dict(orient="records")
 
-    all_files = []
+    uploaded_dfs = []
 
     for course, files in info["courses"].items():
         for f in files:
-            all_files.append(f["df"])
+            df = f.get("df")
+            if df is not None and "Username" in df.columns:
+                uploaded_dfs.append(df)
+        if not uploaded_dfs:
+            return jsonify({"error": "No usable files with a 'Username' column were found."}), 400
     
     gradebook_df = None
     analytics_df = None
 
-    for df in all_files:
-        if detect_gradebook(df):
-            gradebook_df =df
-        elif detect_analytics(df):
+    for df in uploaded_dfs:
+        if gradebook_df is None and detect_gradebook(df):
+            gradebook_df = df
+        elif analytics_df is None and detect_analytics(df):
             analytics_df = df
 
         if gradebook_df is None:
@@ -224,13 +228,16 @@ def process_file():
         
 
     return jsonify({
-        "courses": {
-            course: [
-                {"file_name": f["file_name"]}
-                for f in files
-            ]
-            for course, files in info["courses"].items()
-        }
+        # "courses": {
+        #     course: [
+        #         {"file_name": f["file_name"]}
+        #         for f in files
+        #     ]
+        #     for course, files in info["courses"].items()
+        # }
+
+        "columns": master_df.columns.tolist(),
+        "rows": master_df.to_dict(oreient="records")
     })
 # Serve React assets + handle client-side routing should add
 @app.route("/<path:path>")
