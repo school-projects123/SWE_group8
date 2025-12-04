@@ -211,7 +211,7 @@ export default function Upload() {
             </div>
             <div className="display" style={{ height: "100%", flex: 1, backgroundColor: "lightblue", maxWidth: "100%" }}>
                 <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
-                    <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px" }}>
+                    <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px", color: "#fff" }}>
                         <h2>Report Page/ Data Analytics</h2>
                         <p>Please select the student you wish to see analytics for.</p>
 
