@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
 export default function Upload() {
-    const pieChart1Ref = useRef(null);
-    const pieChart2Ref = useRef(null);
     const [jsonData, setJsonData] = useState([]);
     const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the excel sheet
     // these fields must be identical to the ones in the excel sheet for the data to show up correctly, or now I guess the json from backend
