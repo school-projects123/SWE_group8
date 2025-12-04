@@ -187,57 +187,74 @@ def get_all_courses(info:dict):
 # for now file info is being passed in the function directly to mock the json responce
 # file_info = {"num_of_files":"N", "file_0": {"name": "name.csv","FormData": "what everform data looks like", "course": "CS3400"},..., "file_N":{}}
 # likely recived via a POST from front end that sends a json that can be read as a python dict /process with be the front end command thats sends the files to be processed once the gen report button is clicked
-@app.route("/process", methods=["POST"])
+
+
+
 
 # funtion to process input from react frontend
+
+    # store latest master spreadsheet in memory so Spreadsheet page can fetch it
+last_master_columns = []
+last_master_rows = []
+
+@app.route("/process", methods=["POST"])
 def process_file():
+    global last_master_columns, last_master_rows
+
     info = get_courses_from_req(request)
-    # note:
-    # cant jsonify pandas DataFrames directly.
-    # If later need to send data to the frontend,
-    # convert each df using:
-    #
-    # df.to_dict(orient="records")
+    courses = info["courses"]
 
+    # collect all DataFrames that have a Username column
     uploaded_dfs = []
-
-    for course, files in info["courses"].items():
+    for course, files in courses.items():
         for f in files:
             df = f.get("df")
             if df is not None and "Username" in df.columns:
                 uploaded_dfs.append(df)
-        if not uploaded_dfs:
-            return jsonify({"error": "No usable files with a 'Username' column were found."}), 400
-    
+
+    if not uploaded_dfs:
+        return jsonify({"error": "No usable files with a 'Username' column were found."}), 400
+
     gradebook_df = None
     analytics_df = None
 
+    # detect gradebook + analytics using your compile_tool helpers
     for df in uploaded_dfs:
         if gradebook_df is None and detect_gradebook(df):
             gradebook_df = df
         elif analytics_df is None and detect_analytics(df):
             analytics_df = df
 
-        if gradebook_df is None:
-            return jsonify({"error": "No valid gradebook file uploaded"}), 400
-        
-        if analytics_df is None:
-            return jsonify({"error": "No valid analytics file uploaded"}), 400
-        
+    last_master_columns = []
+    last_master_rows = []
+
+    if gradebook_df is not None and analytics_df is not None:
         master_df = build_master_dataframe(gradebook_df, analytics_df)
-        
+        last_master_columns = master_df.columns.tolist()
+        last_master_rows = master_df.to_dict(orient="records")
+    else:
+        print("Could not detect gradebook/analytics files.")
 
+    # keep the old "courses" output so existing frontend code doesn't break
     return jsonify({
-        # "courses": {
-        #     course: [
-        #         {"file_name": f["file_name"]}
-        #         for f in files
-        #     ]
-        #     for course, files in info["courses"].items()
-        # }
+        "courses": {
+            course: [
+                {"file_name": f["file_name"]}
+                for f in files
+            ]
+            for course, files in courses.items()
+        },
+        "masterColumns": last_master_columns,
+        "masterRows": last_master_rows
+    })
 
-        "columns": master_df.columns.tolist(),
-        "rows": master_df.to_dict(oreient="records")
+
+# NEW: endpoint the Spreadsheet.jsx page will call
+@app.route("/master", methods=["GET"])
+def get_master():
+    return jsonify({
+        "masterColumns": last_master_columns,
+        "masterRows": last_master_rows
     })
 # Serve React assets + handle client-side routing should add
 @app.route("/<path:path>")
