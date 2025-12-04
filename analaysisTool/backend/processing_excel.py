@@ -8,6 +8,7 @@ import pandas as pd # for mock retriving the post until that is set up in fronte
 import re
 from html import unescape
 
+from compile_tool import detect_gradebook, detect_analytics, build_master_dataframe
 
 # constants/ compiled regex
 re_tag = re.compile(r"<.*?>")
@@ -197,6 +198,30 @@ def process_file():
     # convert each df using:
     #
     # df.to_dict(orient="records")
+
+    all_files = []
+
+    for course, files in info["courses"].items():
+        for f in files:
+            all_files.append(f["df"])
+    
+    gradebook_df = None
+    analytics_df = None
+
+    for df in all_files:
+        if detect_gradebook(df):
+            gradebook_df =df
+        elif detect_analytics(df):
+            analytics_df = df
+
+        if gradebook_df is None:
+            return jsonify({"error": "No valid gradebook file uploaded"}), 400
+        
+        if analytics_df is None:
+            return jsonify({"error": "No valid analytics file uploaded"}), 400
+        
+        master_df = build_master_dataframe(gradebook_df, analytics_df)
+        
 
     return jsonify({
         "courses": {
