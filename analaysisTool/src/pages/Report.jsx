@@ -233,7 +233,7 @@ export default function Upload() {
                     </div>
                     <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
                         <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
-                            <div style={{ width: "20%", backgroundColor: "#b6b6b6", padding: "10px", boxSizing: "border-box" }}>
+                            <div style={{ width: "20%", backgroundColor: "#fbfbfbff", padding: "10px", boxSizing: "border-box" }}>
                                 <h2 style={{ margin: 0 }}>Student View</h2>
                                 <p>Here you can see the details for the selected student.</p>
 
