@@ -263,7 +263,7 @@ export default function Upload() {
                                 </div>
 
                             </div>
-                            <div style={{ width: "80%", backgroundColor: "#b6b6b6", padding: "20px", boxSizing: "border-box" }}>
+                            <div style={{ width: "80%", backgroundColor: "#ffffff", padding: "20px", boxSizing: "border-box" }}>
                                 <h2>Actual Charts</h2>
                                 <div id="chartDiv"></div>
                                 <div id="userDiv">{renderTableJSX()}</div>
