@@ -93,7 +93,7 @@ def get_courses_from_req(request):
                 raise ValueError("Unsupported file type")        
             
             #clean html safely
-            df = df.applymap(strip_html)
+            df = df.map(strip_html)
             
             # storeing as df directky
             courses[course].append({
