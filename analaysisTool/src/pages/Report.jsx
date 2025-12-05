@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-
+// IMPROVEMENTS FOR JAN-APRIL:
+// need to improve in next term so that large files arent trunicated in the reportpage output
+// currently maxes out at about 15 (excluding bar chart)
+// also adding more visualisation graphics for the data next term
 export default function Upload() {
     const [jsonData, setJsonData] = useState([]);
     const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the excel sheet
