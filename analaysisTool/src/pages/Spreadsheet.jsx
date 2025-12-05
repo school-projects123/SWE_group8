@@ -11,7 +11,7 @@ export default function Spreadsheet() {
       try {
         // Frontend:  http://localhost:5173
         // Backend:   http://localhost:5000
-        const res = await fetch("http://127.0.0.1:5000/master");
+        const res = await fetch("/master");
         const text = await res.text();
         setLoading(true)
         const saved = localStorage.getItem("masterData")
