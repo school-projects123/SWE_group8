@@ -12,6 +12,7 @@ from flask import (
 )
 from flask_cors import CORS
 import pandas as pd
+from compile_tool import detect_gradebook, detect_analytics, build_master_dataframe
 
 app = Flask(
     __name__,
@@ -187,7 +188,50 @@ def get_all_courses(info:dict):
 
 # funtion to process input from react frontend
 def process_file():
+    global last_master_columns, last_master_rows
+
     info = get_courses_from_req(request)
+    courses = info["courses"]
+
+    # collect all DataFrames that have a Username column
+    uploaded_dfs = []
+    for course, files in courses.items():
+        for f in files:
+            df = f.get("df")
+            if df is not None and "Username" in df.columns:
+                uploaded_dfs.append(df)
+
+    if not uploaded_dfs:
+        return jsonify({"error": "No usable files with a 'Username' column were found."}), 400
+
+    gradebook_df = None
+    analytics_df = None
+
+    # detect gradebook + analytics using your compile_tool helpers
+    for df in uploaded_dfs:
+        if gradebook_df is None and detect_gradebook(df):
+            gradebook_df = df
+        elif analytics_df is None and detect_analytics(df):
+            analytics_df = df
+
+    # reset master
+    last_master_columns = []
+    last_master_rows = []
+
+    if gradebook_df is not None and analytics_df is not None:
+        master_df = build_master_dataframe(gradebook_df, analytics_df)
+
+        # 🔹 convert NaN → None so JSON is valid for the browser
+        master_df = master_df.astype(object).where(pd.notnull(master_df), None)
+
+        last_master_columns = master_df.columns.tolist()
+        last_master_rows = master_df.to_dict(orient="records")
+
+        print("Built master spreadsheet with", len(last_master_rows), "rows.")
+    else:
+        print("Could not detect gradebook/analytics files.")
+
+    # keep the old "courses" style output as well
     # note:
     # cant jsonify pandas DataFrames directly.
     # If later need to send data to the frontend,
@@ -202,11 +246,22 @@ def process_file():
                 for f in files
             ]
             for course, files in info["courses"].items()
-        }
+        },
+        "masterColumns": last_master_columns,
+        "masterRows": last_master_rows
     })
 
 
 # ROUTES FOR FRONTEND
+
+@app.route("/master", methods=["GET"])
+def get_master():
+    # This is what Spreadsheet.jsx calls
+    return jsonify({
+        "masterColumns": last_master_columns,
+        "masterRows": last_master_rows
+    })
+
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
