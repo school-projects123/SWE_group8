@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
 export default function Upload() {
-    const pieChart1Ref = useRef(null);
-    const pieChart2Ref = useRef(null);
     const [jsonData, setJsonData] = useState([]);
-    const defaultFilename = 'Master_Spreadsheet.xlsx';
     const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the excel sheet
+    // these fields must be identical to the ones in the excel sheet for the data to show up correctly, or now I guess the json from backend
 
     // Utility to load external scripts
     function loadScript(src, callback) {
@@ -31,20 +29,19 @@ export default function Upload() {
     }
 
     // load file data and process Excel in one function, much better
-    function loadData(filename) { // this needs to get it from the back end!
+    function loadData() {
         loadXlsxJs(async () => {
             try {
-                const res = await fetch(filename);
-                if (!res.ok) throw new Error('Network error');
-                const arrayBuffer = await res.arrayBuffer();
-                const data = new Uint8Array(arrayBuffer);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                setJsonData(sheetData.slice(0, 15)); // only first 15 rows for display
+                // fetch processed JSON data from the backend
+                const res = await fetch("http://127.0.0.1:5000/master");
+                if (!res.ok) throw new Error("Network error, couldn't fetch data from backend.");
+                const data = await res.json(); // parse JSON response
+                const sheetData = data.masterRows || []; // get rows
+                setJsonData(sheetData.slice(0, 15)); // particular subset for display (table only)
                 renderBarChart(sheetData);
                 plotEssayVsExamFromTable(sheetData);
             } catch (err) {
-                console.error('Error fetching or processing user data:', err);
+                console.error("Error fetching or processing backend data:", err);
             }
         });
     }
@@ -180,7 +177,7 @@ export default function Upload() {
 
     // Initial load
     useEffect(() => {
-        loadData(defaultFilename);
+        loadData(); // should just work
 
         // for some reason the scatter plot doesn't load without this call
         loadChartJs(() => {

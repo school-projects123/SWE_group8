@@ -145,8 +145,7 @@ def get_courses_from_req(request):
     #       [{"file_name": "the actual name", "file" : [{"the acctual content of the file that kayma needs which is a dict that can be converted back to a dataframe"}]},
     #        {"file_name": "the actual name", "file" : [{"the dict content of the next file in the course"}]}]}}
     # eventually it will have multiple course_names with actuall names to parse through
-    return info 
-    print("not implimented")
+    return info
 
 # will add call within file processor to cheak that uploaded file isn't malformed - not fully implemented yet
 def safe_dataframe(df):
