@@ -8,7 +8,7 @@ import pandas as pd # for mock retriving the post until that is set up in fronte
 import re
 from html import unescape
 
-from compile_tool import detect_gradebook, detect_analytics, build_master_dataframe
+from .compile_tool import detect_gradebook, detect_analytics, build_master_dataframe
 
 # constants/ compiled regex
 re_tag = re.compile(r"<.*?>")
