@@ -33,7 +33,7 @@ export default function Upload() {
         loadXlsxJs(async () => {
             try {
                 // fetch processed JSON data from the backend
-                const res = await fetch("http://127.0.0.1:5000/master");
+                const res = await fetch("/master");
                 if (!res.ok) throw new Error("Network error, couldn't fetch data from backend.");
                 const data = await res.json(); // parse JSON response
                 const sheetData = data.masterRows || []; // get rows
