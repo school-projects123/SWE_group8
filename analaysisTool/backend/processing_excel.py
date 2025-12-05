@@ -13,18 +13,12 @@ from compile_tool import detect_gradebook, detect_analytics, build_master_datafr
 # constants/ compiled regex
 re_tag = re.compile(r"<.*?>")
 
-app = Flask(__name__,
-            static_folder = "../../dist",
-            static_url_path="")
+app = Flask(__name__, static_folder = "../static", template_folder="../templates")
 #to allow for cross platform communication (flask and vite are on diff [ports for development] doesnt make a diffrence in production)
 CORS(app)
 
 # these are the react serving routes
 # Serve the React homepage
-@app.route("/")
-def serve_react():
-    # should this be the upload page insted?
-    return send_from_directory(app.static_folder, "index.html")
 
 # need to add a message that sends to front end if there are file issues , rn it just says that the files were uploaded
 def get_courses_from_req(request):

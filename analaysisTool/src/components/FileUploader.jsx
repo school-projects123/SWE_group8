@@ -87,7 +87,7 @@ export default function FileUploader() {
     formData.append("numOfFiles", selectedFiles.length);
     try {
       // local host temp till we get a domain name and hosting
-      const res = await fetch("https://dariiapotapenko.pythonanywhere.com/process", {
+      const res = await fetch("http://127.0.0.1:5000/process", {
         method: "POST",
         body: formData,
       });
@@ -95,10 +95,23 @@ export default function FileUploader() {
       const data = await res.json();
       console.log("Backend responce:", data);
       // not showing up because it is called after the await because browsers block popups outside user-click events
-      alert("Upload complete! (output on console)");
+      alert(JSON.stringify(data));
+      localStorage.setItem("masterData", JSON.stringify({
+        columns: data.masterColumns,
+        rows: data.masterRows
+      }));
+      // switch to page where info was sent
+      window.location.href = "/app/spreadsheet"
+
+      
     } catch (err) {
       console.error("error sending to backend:", err);
     }
+  }
+  function getInfo(){
+    // is called once info is sent to process in backend#
+    // takes responce from backend and gives it to the spreadsheep page
+
   }
 
   //Style and structure of the upload page
