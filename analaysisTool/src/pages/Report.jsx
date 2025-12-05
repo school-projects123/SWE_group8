@@ -15,7 +15,7 @@ export default function Upload() {
     }
 
     // XLSX and Chart.js are required for this page, xlsx as this entire file is geared around excel files (not csv or json)
-    function loadXlsxJs(callback) { loadScript('xlsx.full.min.js', callback); }
+    function loadXlsxJs(callback) { loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js', callback); }
     function loadChartJs(callback) { loadScript('https://cdn.jsdelivr.net/npm/chart.js', callback); }
 
     // Helper to create a chart
