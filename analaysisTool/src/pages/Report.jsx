@@ -89,7 +89,6 @@ export default function Upload() {
     }
 
     // Render scatter plot of Word Count vs Score
-
     function plotEssayVsExamFromTable(data) {
         const points = data
             .map(u => {
@@ -186,7 +185,6 @@ export default function Upload() {
         loadChartJs(() => {
         });
     }, []);
-
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     // ensure selectedIndex is valid when jsonData changes
@@ -280,8 +278,7 @@ export default function Upload() {
                 <div style={{ flex: 1, textAlign: "center" }}>
                     <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", justifyContent: "center", gap: "20px" }}>
                         <li><a href="https://github.com/school-projects123/SWE_group8">GitHub Repository</a></li>
-                        <li><a href="https://github.com/school-projects123/SWE_group8/tree/Special-Branch">(Special Branch)</a></li>
-                        <li><a href="https://github.com/school-projects123/SWE_group8/tree/Report_branch">(Report Branch)</a></li>
+                        <li><a href="https://example.com/">Example</a></li>
                     </ul>
                     <div style={{ marginTop: "8px", fontSize: "0.9em", color: "#333" }}>
                         All rights reserved. By who, I do not know.
