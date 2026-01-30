@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 // IMPROVEMENTS FOR JAN-APRIL:
-// need to improve in next term so that large files arent trunicated in the reportpage output
-// currently maxes out at about 15 (excluding bar chart)
+// need to improve in next term so that large files arent trunicated in the report page output
+// currently maxes out at about 15 (excluding bar chart) -> see 'setJsonData'
 // also adding more visualisation graphics for the data next term
+// get rid of XLSX dependency as its now using csv
 export default function Upload() {
     const [jsonData, setJsonData] = useState([]);
     const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the excel sheet
-    // these fields must be identical to the ones in the excel sheet for the data to show up correctly, or now I guess the json from backend
+    // these fields must be identical to the ones in the json for the data to show up correctly
 
     // Utility to load external scripts
     function loadScript(src, callback) {
@@ -40,7 +41,7 @@ export default function Upload() {
                 if (!res.ok) throw new Error("Network error, couldn't fetch data from backend.");
                 const data = await res.json(); // parse JSON response
                 const sheetData = data.masterRows || []; // get rows
-                setJsonData(sheetData.slice(0, 15)); // particular subset for display (table only)
+                setJsonData(sheetData.slice(0, 15)); // particular subset for display (table only). LIMITED TO 15, CHANGE THIS WHEN NEEDED
                 renderBarChart(sheetData);
                 plotEssayVsExamFromTable(sheetData);
             } catch (err) {
@@ -234,7 +235,7 @@ export default function Upload() {
                     </div>
                     <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
                         <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
-                            <div style={{ width: "20%", backgroundColor: "#fbfbfbff", padding: "10px", boxSizing: "border-box" }}>
+                            <div style={{ width: "20%", backgroundColor: "#fbfbfbff", color: "#000", padding: "10px", boxSizing: "border-box" }}>
                                 <h2 style={{ margin: 0 }}>Student View</h2>
                                 <p>Here you can see the details for the selected student.</p>
 
@@ -265,7 +266,7 @@ export default function Upload() {
 
                             </div>
                             <div style={{ width: "80%", backgroundColor: "#ffffff", padding: "20px", boxSizing: "border-box" }}>
-                                <h2>Actual Charts</h2>
+                                <h2>Charts Showing Data</h2>
                                 <div id="chartDiv"></div>
                                 <div id="userDiv">{renderTableJSX()}</div>
                                 <div id="scatterDiv"></div>
