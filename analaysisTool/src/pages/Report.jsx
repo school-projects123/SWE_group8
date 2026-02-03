@@ -214,8 +214,7 @@ export default function Upload() {
                         <h2>Report Page/ Data Analytics</h2>
                         <p>Please select the student you wish to see analytics for.</p>
 
-                        {/* dropdown select for student list */}
-                        <div className="studentList">
+                        <div className="studentList"> {/* dropdown select for student list */}
                             <label htmlFor="studentSelect" style={{ color: "#fff", display: "block", marginBottom: 8 }}>Students</label>
                             <select
                                 id="studentSelect"
@@ -223,8 +222,7 @@ export default function Upload() {
                                 onChange={(e) => setSelectedIndex(parseInt(e.target.value, 10))}
                                 style={{ width: "100%", padding: "6px", borderRadius: 4 }}
                             >
-                                {/* more error handing for nearly impossible cases, but necesary for edge cases */}
-                                {studentNames.length === 0 ? ( 
+                                {studentNames.length === 0 ? (
                                     <option value={0} disabled>No students loaded</option>
                                 ) : (
                                     studentNames.map((n, i) => <option key={i} value={i}>{n}</option>)
