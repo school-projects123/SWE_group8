@@ -3,10 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 // need to improve in next term so that large files arent trunicated in the report page output
 // currently maxes out at about 15 (excluding bar chart)
 // also adding more visualisation graphics for the data next term
-// get rid of XLSX dependency as its now using csv
 export default function Upload() {
     const [jsonData, setJsonData] = useState([]);
-    const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the excel sheet
+    const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the data
     // these fields must be identical to the ones in the json for the data to show up correctly
 
     // Utility to load external scripts
@@ -31,10 +30,8 @@ export default function Upload() {
         });
     }
 
-    // load file data and process Excel in one function, much better
-    async function loadData() {
+    async function loadData() { // fetch processed JSON data from the backend
         try {
-            // fetch processed JSON data from the backend
             const res = await fetch("/master");
             if (!res.ok) throw new Error("Network error, couldn't fetch data from backend.");
             const data = await res.json(); // parse JSON response
@@ -47,8 +44,7 @@ export default function Upload() {
         }
     }
 
-    // Render user score bar chart
-    function renderBarChart(data) {
+    function renderBarChart(data) { // bar chart of user scores
         const chartDiv = document.getElementById('chartDiv') || Object.assign(document.body.appendChild(document.createElement('div')), {id: 'chartDiv'});
         chartDiv.innerHTML = '';
         const canvas = Object.assign(document.createElement('canvas'), { id: 'userScoreChart', width: 480, height: 240 });
@@ -70,7 +66,7 @@ export default function Upload() {
         });
 
         loadChartJs(() => {
-            createChart(canvas.getContext('2d'), 'bar', labels, scores, { // this is for: the bar chart
+            createChart(canvas.getContext('2d'), 'bar', labels, scores, { // the bar chart
                 datasetOptions: { backgroundColor: backgroundColours, borderColor: 'black', borderWidth: 1 },
                 options: {
                     indexAxis: 'x',
@@ -86,8 +82,7 @@ export default function Upload() {
         });
     }
 
-    // Render scatter plot of Word Count vs Score
-    function plotEssayVsExamFromTable(data) {
+    function plotEssayVsExamFromTable(data) { // word count vs score scatter plot
         const points = data
             .map(u => {
                 const wordNum = parseFloat(u['Essay Score (Raw)'] || '');
@@ -175,18 +170,14 @@ export default function Upload() {
         </table>
     );
 
-    // Initial load
-    useEffect(() => {
-        loadData(); // should just work
-
-        // for some reason the scatter plot doesn't load without this call
-        loadChartJs(() => {
+    useEffect(() => { // Initial load
+        loadData();
+        loadChartJs(() => { // for some reason the scatter plot doesn't load without this call
         });
     }, []);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    // ensure selectedIndex is valid when jsonData changes
-    useEffect(() => {
+    useEffect(() => { // ensure selectedIndex is valid when jsonData changes
         if (!jsonData || !jsonData.length) {
             setSelectedIndex(0);
             return;
