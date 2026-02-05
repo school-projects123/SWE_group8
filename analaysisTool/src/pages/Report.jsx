@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 // IMPROVEMENTS FOR JAN-APRIL:
-// need to improve in next term so that large files arent trunicated in the report page output
-// currently maxes out at about 15 (excluding bar chart)
-// also adding more visualisation graphics for the data next term
+// need to improve so that large files aren't truncated in the report page output
+// also adding more visualisation graphics for the data
 export default function Upload() {
     const [jsonData, setJsonData] = useState([]);
     const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the data
@@ -94,7 +93,7 @@ export default function Upload() {
             document.body.appendChild(document.createElement('div')),
             { id: 'scatterDiv' }
         );
-        scatterDiv.innerHTML = ''; // clear previous
+        scatterDiv.innerHTML = ''; // clear previous content
 
         const container = document.createElement('div');
         container.style.width = '150%';
@@ -146,7 +145,7 @@ export default function Upload() {
         });
     }
 
-    const renderTableJSX = () => (
+    const renderTableJSX = () => ( // data table
         <table border="1" style={{ borderCollapse: 'collapse', fontSize: 12, lineHeight: 1.2 }}>
             <thead>
                 <tr>{FIELDS.map(f => <th key={f}>{f}</th>)}</tr>
@@ -163,8 +162,7 @@ export default function Upload() {
 
     useEffect(() => { // Initial load
         loadData();
-        loadChartJs(() => { // for some reason the scatter plot doesn't load without this call
-        });
+        loadChartJs(() => {}); // for some reason the scatter plot doesn't load without this call
     }, []);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
