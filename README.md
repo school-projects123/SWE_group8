@@ -9,6 +9,7 @@ This is just temp until a proper pipline is set up
 ## Activate the environment
 Powershell:
 > Set-ExecutionPolicy Bypass -Scope Process
+
 to temp allow activation because powershell doesn't like it for some reason, then run: 
 > .venv\Scripts\Activate.ps1
 
