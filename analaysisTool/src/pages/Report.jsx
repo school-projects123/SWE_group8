@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 // IMPROVEMENTS FOR JAN-APRIL:
 // need to improve in next term so that large files arent trunicated in the report page output
-// currently maxes out at about 15 (excluding bar chart) -> see 'setJsonData'
+// currently maxes out at about 15 (excluding bar chart)
 // also adding more visualisation graphics for the data next term
 // get rid of XLSX dependency as its now using csv
 export default function Upload() {
@@ -41,7 +41,7 @@ export default function Upload() {
                 if (!res.ok) throw new Error("Network error, couldn't fetch data from backend.");
                 const data = await res.json(); // parse JSON response
                 const sheetData = data.masterRows || []; // get rows
-                setJsonData(sheetData.slice(0, 15)); // particular subset for display (table only). LIMITED TO 15, CHANGE THIS WHEN NEEDED
+                setJsonData(sheetData);
                 renderBarChart(sheetData);
                 plotEssayVsExamFromTable(sheetData);
             } catch (err) {
@@ -169,7 +169,7 @@ export default function Upload() {
                 <tr>{FIELDS.map(f => <th key={f}>{f}</th>)}</tr>
             </thead>
             <tbody>
-                {jsonData.map((user, i) => (
+                {jsonData.slice(0, 15).map((user, i) => (
                     <tr key={i}>
                         {FIELDS.map(f => <td key={f}>{f === 'Title' ? (user[f] || '').toString().slice(0,30) : user[f] || ''}</td>)}
                     </tr>
