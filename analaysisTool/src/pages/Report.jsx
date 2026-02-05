@@ -8,19 +8,14 @@ export default function Upload() {
     const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the data
     // these fields must be identical to the ones in the json for the data to show up correctly
 
-    // Utility to load external scripts
-    function loadScript(src, callback) {
-        if (document.querySelector(`script[src="${src}"]`)) return callback();
+    function loadChartJs(callback) {
+        if (document.querySelector('script[src="https://cdn.jsdelivr.net/npm/chart.js"]')) return callback();
         const script = document.createElement('script');
-        script.src = src;
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
         script.onload = callback;
         document.head.appendChild(script);
     }
 
-    // Chart.js is required for this page
-    function loadChartJs(callback) { loadScript('https://cdn.jsdelivr.net/npm/chart.js', callback); }
-
-    // Helper to create a chart
     function createChart(ctx, type, labels, data, options = {}) {
         if (!ctx || !window.Chart) return;
         new Chart(ctx, {
@@ -154,7 +149,6 @@ export default function Upload() {
         });
     }
 
-    // Render table in JSX
     const renderTableJSX = () => (
         <table border="1" style={{ borderCollapse: 'collapse', fontSize: 12, lineHeight: 1.2 }}>
             <thead>
