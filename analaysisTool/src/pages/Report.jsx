@@ -18,8 +18,7 @@ export default function Upload() {
         document.head.appendChild(script);
     }
 
-    // XLSX and Chart.js are required for this page, xlsx as this entire file is geared around excel files (not csv or json)
-    function loadXlsxJs(callback) { loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js', callback); }
+    // Chart.js is required for this page
     function loadChartJs(callback) { loadScript('https://cdn.jsdelivr.net/npm/chart.js', callback); }
 
     // Helper to create a chart
@@ -33,21 +32,19 @@ export default function Upload() {
     }
 
     // load file data and process Excel in one function, much better
-    function loadData() {
-        loadXlsxJs(async () => {
-            try {
-                // fetch processed JSON data from the backend
-                const res = await fetch("/master");
-                if (!res.ok) throw new Error("Network error, couldn't fetch data from backend.");
-                const data = await res.json(); // parse JSON response
-                const sheetData = data.masterRows || []; // get rows
-                setJsonData(sheetData);
-                renderBarChart(sheetData);
-                plotEssayVsExamFromTable(sheetData);
-            } catch (err) {
-                console.error("Error fetching or processing backend data:", err);
-            }
-        });
+    async function loadData() {
+        try {
+            // fetch processed JSON data from the backend
+            const res = await fetch("/master");
+            if (!res.ok) throw new Error("Network error, couldn't fetch data from backend.");
+            const data = await res.json(); // parse JSON response
+            const sheetData = data.masterRows || []; // get rows
+            setJsonData(sheetData);
+            renderBarChart(sheetData);
+            plotEssayVsExamFromTable(sheetData);
+        } catch (err) {
+            console.error("Error fetching or processing backend data:", err);
+        }
     }
 
     // Render user score bar chart
