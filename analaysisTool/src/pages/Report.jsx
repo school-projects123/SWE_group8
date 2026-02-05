@@ -47,21 +47,18 @@ export default function Upload() {
         canvas.style.height = '240px';
         chartDiv.appendChild(canvas);
 
-        const users = data.map(u => ({ name: `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim(), grade: parseFloat(u['Essay Score (Raw)'] || '') }))
-            .filter(u => !isNaN(u.grade));
+        const users = data.map(u => ({ name: `${u['First Name'] || ''} ${u['Last Name'] || ''}`.trim(), grade: parseFloat(u['Essay Score (Raw)'] || '') })).filter(u => !isNaN(u.grade));
         const labels = users.map(u => u.name);
         const scores = users.map(u => u.grade);
-        const maxScore = Math.max(...scores);
-        const minScore = Math.min(...scores);
 
         const backgroundColours = scores.map(score => {
-            if (score === maxScore) return 'green';
-            if (score === minScore) return 'red';
+            if (score === Math.max(...scores)) return 'green';
+            if (score === Math.min(...scores)) return 'red';
             return 'rgba(255, 206, 86, 0.9)';
         });
 
         loadChartJs(() => {
-            createChart(canvas.getContext('2d'), 'bar', labels, scores, { // the bar chart
+            createChart(canvas.getContext('2d'), 'bar', labels, scores, {
                 datasetOptions: { backgroundColor: backgroundColours, borderColor: 'black', borderWidth: 1 },
                 options: {
                     indexAxis: 'x',
