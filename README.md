@@ -1,21 +1,22 @@
 
 Principles of Software Engineering Project
 ========
-Principles of Software Engineering Project...
 Blackboard Analysis Tool
 
 # Note for running (while in dev)
-need to use two diffrent terminals (eg powershell, cmd)
-This is just temp until proper pipline is set up
+Need to use two different terminals (eg powershell, cmd)
+This is just temp until a proper pipline is set up
 ## Activate the environment
-powershell:
-"Set-ExecutionPolicy Bypass -Scope Process"
-to temp allow activation becuse powershell doesn't like it for some reason. then run: ".venv\Scripts\Activate.ps1"
+Powershell:
+> Set-ExecutionPolicy Bypass -Scope Process
+to temp allow activation because powershell doesn't like it for some reason, then run: 
+> .venv\Scripts\Activate.ps1
 
-cmd: ".\\.venv\Scripts\activate.bat"
+CMD:
+> .\\.venv\Scripts\activate.bat
 
 ## Run each script
-run the backend then the frontend
+Run the backend then the frontend
 flask/python - runing backend:
     ensure all installs in requirements.txt are installed
     cd to analaysisTool/src/file_processing
@@ -24,4 +25,3 @@ flask/python - runing backend:
 vite/react - running frontend:
     cd to analaysisTool
     npm run dev
-
