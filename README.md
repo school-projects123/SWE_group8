@@ -33,6 +33,10 @@ Run the following command (may also need to seperately pip install pandas,flask_
 
 > python3 -m pip install -r analaysisTool/requirements.txt
 
+One might say to use the following command to update it to include changes, but it seems that this doesn't work properly and saves the new stuff to another directory, and at any rate the .js it produces doesn't seem to work for me.
+
+> sudo npm run build
+
 To run the programme:
 
 > python3 -m analaysisTool.backend.processing_excel

@@ -49,27 +49,24 @@ export default function Upload() {
         const labels = users.map(u => u.name);
         const scores = users.map(u => u.grade);
 
-        const backgroundColours = scores.map(score => {
-            if (score === Math.max(...scores)) return 'green';
-            if (score === Math.min(...scores)) return 'red';
-            return 'rgba(255, 206, 86, 0.9)';
-        });
+        const max = Math.max(...scores), min = Math.min(...scores);
+        const backgroundColours = scores.map(s =>
+            s === max ? 'green' : s === min ? 'red' : 'rgba(255, 206, 86, 0.9)'
+        );
 
-        loadChartJs(() => {
-            createChart(canvas.getContext('2d'), 'bar', labels, scores, {
-                datasetOptions: { backgroundColor: backgroundColours, borderColor: 'black', borderWidth: 1 },
-                options: {
-                    indexAxis: 'x',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { ticks: { maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-                        y: { beginAtZero: true, ticks: { stepSize: 10 } }
-                    },
-                    plugins: { legend: { display: false }, tooltip: { bodyFont: { size: 12 } } }
-                }
-            });
-        });
+        loadChartJs(() => createChart(canvas.getContext('2d'), 'bar', labels, scores, {
+            datasetOptions: { backgroundColor: backgroundColours, borderColor: 'black', borderWidth: 1 },
+            options: {
+                indexAxis: 'x',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { maxRotation: 45, minRotation: 0 }, grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { stepSize: 10 } }
+                },
+                plugins: { legend: { display: false }, tooltip: { bodyFont: { size: 12 } } }
+            }
+        }));
     }
 
     function plotEssayVsExamFromTable(data) { // word count vs score scatter plot
@@ -110,38 +107,15 @@ export default function Upload() {
             return;
         }
 
-        loadChartJs(() => {
-            new Chart(canvas.getContext('2d'), {
-                type: 'scatter',
-                data: {
-                    datasets: [{
-                        label: 'Essay Scores vs Exam Scores',
-                        data: points,
-                        backgroundColor: 'rgba(78,78,78,0.9)',
-                        borderColor: 'rgba(0,0,0,0.6)',
-                        pointRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: { title: { display: true, text: 'Essay Score' }, beginAtZero: true },
-                        y: { title: { display: true, text: 'Exam Score' }, beginAtZero: true }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const point = context.raw;
-                                    return `${point.label}: (${point.x}, ${point.y})`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        });
+        loadChartJs(() => new Chart(canvas.getContext('2d'), {
+            type: 'scatter',
+            data: { datasets: [{ label: 'Essay Scores vs Exam Scores', data: points, backgroundColor: 'rgba(78,78,78,0.9)', borderColor: 'rgba(0,0,0,0.6)', pointRadius: 6 }] },
+            options: {
+                responsive: true,
+                scales: { x: { title: { display: true, text: 'Essay Score' }, beginAtZero: true }, y: { title: { display: true, text: 'Exam Score' }, beginAtZero: true } },
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw.label}: (${c.raw.x}, ${c.raw.y})` } } }
+            }
+        }));
     }
 
     const renderTableJSX = () => ( // data table
@@ -186,11 +160,11 @@ export default function Upload() {
             </div>
             <div className="display" style={{ height: "100%", flex: 1, backgroundColor: "lightblue", maxWidth: "100%" }}>
                 <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
-                    <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px", color: "#fff" }}>
-                        <h2>Report Page/ Data Analytics</h2>
+                    <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px", color: "#000" }}>
+                        <h2>Report Page - Data Analytics</h2>
                         <p>Please select the student you wish to see analytics for.</p>
                         <div className="studentList"> {/* dropdown select for student list */}
-                            <label htmlFor="studentSelect" style={{ color: "#fff", display: "block", marginBottom: 8 }}>Students</label>
+                            <label htmlFor="studentSelect" style={{ color: "#000", display: "block", marginBottom: 8 }}>Students</label>
                             <select
                                 id="studentSelect"
                                 value={selectedIndex}
