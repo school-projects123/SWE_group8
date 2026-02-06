@@ -4,8 +4,7 @@ Principles of Software Engineering Project
 Blackboard Analysis Tool
 
 # Note for running (while in dev) (Windows)
-Need to use two different terminals (eg powershell, cmd)
-This is just temp until a proper pipline is set up
+Need to use two different terminals (eg powershell, cmd). This is just temp until a proper pipline is set up.
 ## Activate the environment
 Powershell:
 > Set-ExecutionPolicy Bypass -Scope Process
@@ -28,13 +27,13 @@ vite/react - running frontend:
     npm run dev
 
 # Notes for running (Mac/Linux)
+Assuming you are in the github repo root folder (so 'SWE_GROUP8').
 
-Within the project root (so cd to analaysisTool), run the following two commands (may also need to seperately pip install pandas,flask_cors,flask), only need to do these the first time:
-> python3 -m venv .venv
+Run the following command (may also need to seperately pip install pandas,flask_cors,flask), only need to do this the first time:
 
-> python3 -m pip install -r requirements.txt
+> python3 -m pip install -r analaysisTool/requirements.txt
 
-To run the programme (remove 'analaysisTool.' depending on directory you are running from):
+To run the programme:
 
 > python3 -m analaysisTool.backend.processing_excel
 

@@ -22,8 +22,8 @@ CORS(app)
 
 # need to add a message that sends to front end if there are file issues , rn it just says that the files were uploaded
 def get_courses_from_req(request):
-    # old loop was fragile and somtimes skipped files
-    # noe builds 1 pandas DataFrame PER uploaded file.
+    # old loop was fragile and sometimes skipped files
+    # now builds 1 pandas DataFrame PER uploaded file.
     # Each file is stored directly – NO dict roundtrip
     #info = request.get_json
     #num_of_files = int(file_info["num_of_files"])
@@ -51,7 +51,7 @@ def get_courses_from_req(request):
                     # if file is csv from blackboard it will be utf-8 with BOM
                     df = pd.read_csv(file, encoding = "utf-8-sig")
                 except:
-                    # if it is xls or xlsx it will be utf- 16
+                    # if it is xls or xlsx it will be utf-16
                     file.seek(0)
                     df = pd.read_csv(file, encoding = "utf-16")
                 # print("csv uploaded")
@@ -100,20 +100,20 @@ def get_courses_from_req(request):
             # this generates the wrongly processed file!
             # preview_text = df.head().to_csv(index=False)
             # print("normal xls: ",df ) # this one gives cannot access local variable 'df' where it is not associated with a value"
-            # but even when commented an unknow error is still being thrown??
+            # but even when commented an unknown error is still being thrown??
             # an exception is being thrown
 
         except Exception as e:
             print("FAILED TO PROCESS FILE:", file.filename, repr(e))
             # cannot access local variable 'df' where it is not associated with a value"
-            # failuse is flagging files that are also being processed as expected to adding same file twoce with diffrent rsult -
-            # not proper exception handleing
+            # failuse is flagging files that are also being processed as expected to adding same file twice with different result -
+            # not proper exception handling
 
-        # likely wont need to handle if its a folder because of frontend safeguards
-        # could the same file be uploaded twise? how to deal with it?
+        # likely won't need to handle if its a folder because of frontend safeguards
+        # could the same file be uploaded twice? how to deal with it?
 
     #return jsonify({"status": "success", "results": results})
-    # the temp filepaths probubly will be marked as not existing as they are gibberish
+    # the temp filepaths probably will be marked as not existing as they are gibberish
 
     info = {"courses": courses}
 
@@ -149,18 +149,18 @@ def get_courses_from_req(request):
 def safe_dataframe(df):
     try:
         # Basic sanity checks
-        # incase a non compatable file is accidentally passed in
+        # incase a non compatible file is accidentally passed in
         if df is None:
             raise ValueError("No data loaded")
-        # wont add an emty file because it has no info
+        # wont add an empty file because it has no info
         if df.empty:
             raise ValueError("File contains no rows")
 
         # Force evaluation so it catches parser/data corruption issues
         df.head(1)
 
-        return None   # no error
-    # if somthing else goes wring return the error # insted of sending a signal to front end to move on send an error message that the file cannon't be read
+        return None # no error
+    # if something else goes wrong return the error # instead of sending a signal to front end to move on send an error message that the file cannot be read
     except Exception as e:
         return f"Malformed or unreadable file: {str(e)}"
 

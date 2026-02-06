@@ -26,8 +26,8 @@ re_tag = re.compile(r"<.*?>")
 CORS(app)
 
 def get_courses_from_req(request):
-    #old loop was fragile and somtimes skpped files
-    # noe builds 1 pandas DataFrame PER uploaded file.
+    # old loop was fragile and sometimes skipped files
+    # now builds 1 pandas DataFrame PER uploaded file.
     # Each file is stored directly – NO dict roundtrip
     #info = request.get_json
     #num_of_files = int(file_info["num_of_files"])
@@ -43,7 +43,7 @@ def get_courses_from_req(request):
 
         if course not in courses:
             courses[course] = []
-        # incase there isn't a course (because thats not implemented yet)
+        # in case there isn't a course (because that's not implemented yet)
 
         try:
             # read excel/csv
@@ -55,10 +55,10 @@ def get_courses_from_req(request):
                     # if file is csv from blackboard it will be utf-8 with BOM
                     df = pd.read_csv(file, encoding = "utf-8-sig")
                 except:
-                    # if it is xls or xlsx it will be utf- 16
+                    # if it is xls or xlsx it will be utf-16
                     file.seek(0)                      
                     df = pd.read_csv(file, encoding = "utf-16")
-                # print("csv uploaded")
+                #print("csv uploaded")
                 # currently preview first 3 rows for preview but is converted to a python dict for the version with all info 
                 preview_text = df.head(3).to_csv(index = False) 
                 body_content = df.head().to_dict(orient = 'records')
@@ -69,12 +69,12 @@ def get_courses_from_req(request):
                 body_content = df.head().to_dict(orient = 'records')
             # most files downloaded from blackboard are this type
             elif file_extrac == "xls":
-                    #go to reading as CSV/ UTF-16 text - was having issues because its a bof type file not a biff type file?
-                    #check what type of file it is
+                    # go to reading as CSV/ UTF-16 text - was having issues because its a bof type file not a biff type file?
+                    # check what type of file it is
                     file.seek(0)
                     file_bytes = file.read()
                     
-                    # read as tsl file if it detects BOM becuase its not a proper excel/csv (because its doenloaded from blackboard)
+                    # read as tsl file if it detects BOM becuase its not a proper excel/csv (because its downloaded from blackboard)
                     if file_bytes.startswith(b"\xff\xfe") or file_bytes.startswith(b"\xfe\xff"):
                         text = file_bytes.decode("utf-16")
                         df = pd.read_csv(io.StringIO(text), sep="\t")
@@ -93,31 +93,31 @@ def get_courses_from_req(request):
             else:
                 raise ValueError("Unsupported file type")        
             
-            #clean html safely
+            # clean html safely
             df = df.map(strip_html)
             
-            # storeing as df directky
+            # storing as df directly
             courses[course].append({
                 "file_name": file.filename,
                 "df": df
             }) 
-            # this genrates the wrongly processed file!
+            # this generates the wrongly processed file!
             # preview_text = df.head().to_csv(index=False)
             # print("normal xls: ",df ) # this one gives cannot access local variable 'df' where it is not associated with a value"
-            # but even when commented an unknow error is still being thrown??
+            # but even when commented an unknown error is still being thrown??
             # an exception is being thrown
 
         except Exception as e:
             print("FAILED TO PROCESS FILE:", file.filename, repr(e))
             # cannot access local variable 'df' where it is not associated with a value"
-            # failuse is flagging files that are also being processed as expected to adding same file twoce with diffrent rsult -
-            # not proper exception handleing
+            # failuse is flagging files that are also being processed as expected to adding same file twice with different result -
+            # not proper exception handling
 
         # likely wont need to handle if its a folder because of frontend safeguards
-        # could the same file be uploaded twise? how to deal with it?
+        # could the same file be uploaded twice? how to deal with it?
 
     #return jsonify({"status": "success", "results": results})
-    # the temp filepaths probubly will be marked as not existing as they are gibberish
+    # the temp filepaths probably will be marked as not existing as they are gibberish
    
     info = {"courses": courses}
 
@@ -152,18 +152,18 @@ def get_courses_from_req(request):
 def safe_dataframe(df):
     try:
         # Basic sanity checks
-        # incase a non compatable file is accidentally passed in
+        # incase a non compatible file is accidentally passed in
         if df is None:
             raise ValueError("No data loaded")
-        # wont add an emty file because it has no info
+        # wont add an empty file because it has no info
         if df.empty:
             raise ValueError("File contains no rows")
 
         # Force evaluation so it catches parser/data corruption issues
         df.head(1)
 
-        return None   # no error
-    # if somthing else goes wring return the error # insted of sending a signal to front end to move on send an error message that the file cannon't be read
+        return None # no error
+    # if something else goes wrong return the error # instead of sending a signal to front end to move on send an error message that the file cannot be read
     except Exception as e:
         return f"Malformed or unreadable file: {str(e)}"
 
@@ -173,7 +173,7 @@ def strip_html(text):
         # unescape enteties (&amp, etc..) and strip tags
         return re_tag.sub("",unescape(text))
     return text
-# takes in output from file processing, will be useful for kaymas code as it returns a df of file info
+# takes in output from file processing, will be useful for Kayma's code as it returns a df of file info
 # returns one df per course
 
 
@@ -251,7 +251,6 @@ def process_file():
         "masterRows": last_master_rows
     })
 
-
 # ROUTES FOR FRONTEND
 
 @app.route("/master", methods=["GET"])
@@ -273,7 +272,6 @@ def index(path):
 
 
     return render_template("index.html")
-
 
 if __name__ == "__main__":
     app.run(debug=True)
