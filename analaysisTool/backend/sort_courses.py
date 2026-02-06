@@ -1,7 +1,7 @@
 def group_by_course(items):
     '''
     Groups items by their course labels.
-    To be called before fiile merging.
+    To be called before file merging.
     Input is a list of (files, course label) pairs.
     returns a tuple of (course label, files) pairs.
     Example: 
