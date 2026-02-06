@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 // IMPROVEMENTS FOR JAN-APRIL:
 // need to improve so that large files aren't truncated in the report page output
 // also adding more visualisation graphics for the data
 export default function Upload() {
     const [jsonData, setJsonData] = useState([]);
-    const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // these are the columns of the data
-    // these fields must be identical to the ones in the json for the data to show up correctly
+    const FIELDS = ['First Name','Last Name','Username','Student ID','Grades (%)','Course Grade (%)','Exam Score (Raw)','Essay Score (Raw)','Hours in Course']; // the columns of the data, these fields must be identical to the json for the data to show correctly
 
     function loadChartJs(callback) {
         if (document.querySelector('script[src="https://cdn.jsdelivr.net/npm/chart.js"]')) return callback();
@@ -190,7 +189,6 @@ export default function Upload() {
                     <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px", color: "#fff" }}>
                         <h2>Report Page/ Data Analytics</h2>
                         <p>Please select the student you wish to see analytics for.</p>
-
                         <div className="studentList"> {/* dropdown select for student list */}
                             <label htmlFor="studentSelect" style={{ color: "#fff", display: "block", marginBottom: 8 }}>Students</label>
                             <select
@@ -206,7 +204,6 @@ export default function Upload() {
                                 )}
                             </select>
                         </div>
-
                     </div>
                     <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
                         <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
@@ -214,7 +211,7 @@ export default function Upload() {
                                 <h2 style={{ margin: 0, color: "#000"}}>Student View</h2>
                                 <p>Here you can see the details for the selected student.</p>
 
-                                {/* table flipping, every field is displayed*/}
+                                {/* table flipping, every field is displayed?*/}
                                 <div className="studentDetails">
                                     {jsonData.length === 0 ? (
                                         <div>No student data loaded yet.</div>
@@ -241,7 +238,7 @@ export default function Upload() {
 
                             </div>
                             <div style={{ width: "80%", backgroundColor: "#ffffff", padding: "20px", boxSizing: "border-box" }}>
-                                <h2>Charts Showing Data</h2>
+                                <h2>Actual Charts:</h2>
                                 <div id="chartDiv"></div>
                                 <div id="userDiv">{renderTableJSX()}</div>
                                 <div id="scatterDiv"></div>
