@@ -22,7 +22,7 @@ CORS(app)
 
 # need to add a message that sends to front end if there are file issues , rn it just says that the files were uploaded
 def get_courses_from_req(request):
-    #old loop was fragile and somtimes skpped files
+    # old loop was fragile and somtimes skipped files
     # noe builds 1 pandas DataFrame PER uploaded file.
     # Each file is stored directly – NO dict roundtrip
     #info = request.get_json
@@ -39,7 +39,7 @@ def get_courses_from_req(request):
 
         if course not in courses:
             courses[course] = []
-        # incase there isn't a course (because thats not implemented yet)
+        # in case there isn't a course (because that's not implemented yet)
 
         try:
             # read excel/csv
@@ -65,8 +65,8 @@ def get_courses_from_req(request):
                 body_content = df.head().to_dict(orient = 'records')
             # most files downloaded from blackboard are this type
             elif file_extrac == "xls":
-                    #go to reading as CSV/ UTF-16 text - was having issues because its a bof type file not a biff type file?
-                    #check what type of file it is
+                    # go to reading as CSV/ UTF-16 text - was having issues because its a bof type file not a biff type file?
+                    # check what type of file it is
                     file.seek(0)
                     file_bytes = file.read()
 
@@ -92,12 +92,12 @@ def get_courses_from_req(request):
             #clean html safely
             df = df.map(strip_html)
 
-            # storeing as df directky
+            # storing as df directly
             courses[course].append({
                 "file_name": file.filename,
                 "df": df
             })
-            # this genrates the wrongly processed file!
+            # this generates the wrongly processed file!
             # preview_text = df.head().to_csv(index=False)
             # print("normal xls: ",df ) # this one gives cannot access local variable 'df' where it is not associated with a value"
             # but even when commented an unknow error is still being thrown??
@@ -177,15 +177,15 @@ def strip_html(text):
 def get_all_courses(info:dict):
     return NotImplementedError
 
-# This script will retrive the information from the upload page and store/ sort the excel files depending on the courses they are assigned to
-# for now file info is being passed in the function directly to mock the json responce
+# This script will retrieve the information from the upload page and store/ sort the excel files depending on the courses they are assigned to
+# for now file info is being passed in the function directly to mock the json response
 # file_info = {"num_of_files":"N", "file_0": {"name": "name.csv","FormData": "what everform data looks like", "course": "CS3400"},..., "file_N":{}}
-# likely recived via a POST from front end that sends a json that can be read as a python dict /process with be the front end command thats sends the files to be processed once the gen report button is clicked
+# likely received via a POST from frontend that sends a json that can be read as a python dict /process with be the frontend command that sends the files to be processed once the gen report button is clicked
 
 
 
 
-# funtion to process input from react frontend
+# function to process input from react frontend
 
     # store latest master spreadsheet in memory so Spreadsheet page can fetch it
 # store latest master spreadsheet in memory so Spreadsheet page can fetch it
@@ -272,5 +272,5 @@ def index(path):
 if __name__ =="__main__":
     # app.run(port=5000, debug=True)
     # dummy file_info dict to use for now
-    #python anywher ignores this
+    #python anywhere ignores this
     app.run(port=5000,debug=True)
