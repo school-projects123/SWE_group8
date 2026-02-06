@@ -3,7 +3,7 @@ Principles of Software Engineering Project
 ========
 Blackboard Analysis Tool
 
-# Note for running (while in dev) (windows)
+# Note for running (while in dev) (Windows)
 Need to use two different terminals (eg powershell, cmd)
 This is just temp until a proper pipline is set up
 ## Activate the environment
@@ -27,25 +27,15 @@ vite/react - running frontend:
     cd to analaysisTool
     npm run dev
 
-# Notes for running (mac/linux)
+# Notes for running (Mac/Linux)
 
-Within the project root (so cd to analaysisTool), try (second line might not be necesary?):
+Within the project root (so cd to analaysisTool), run the following two commands (may also need to seperately pip install pandas,flask_cors,flask), only need to do these the first time:
 > python3 -m venv .venv
 
-> source .venv/bin/activate
+> python3 -m pip install -r requirements.txt
 
-If not already installed dependancies (may also seperately need to install pandas,flask_cors,flask). Will work either in repository root or can cd into analaysis tool and remove that from the commands.
-
-> python3 -m pip install -r analaysisTool/requirements.txt
-
-To run the programme:
+To run the programme (remove 'analaysisTool.' depending on directory you are running from):
 
 > python3 -m analaysisTool.backend.processing_excel
 
-Then if the URL doesn't work (which it should), perhaps try in a seperate terminal:
-
-> cd analaysisTool
-
-And finally (try 'npm install' if this doesn't work?)
-
-> npm run dev
+Click on the link (e.g. http://127.0.0.1:5000) to open the webpage/frontend.
