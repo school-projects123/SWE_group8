@@ -30,8 +30,10 @@ export default function Upload() {
             const data = await res.json(); // parse JSON response
             const sheetData = data.masterRows || []; // get rows
             setJsonData(sheetData);
+            loadChartJs(() => {
             renderBarChart(sheetData);
             plotEssayVsExamFromTable(sheetData);
+        });
         } catch (err) {
             console.error("Error fetching or processing backend data:", err);
         }
