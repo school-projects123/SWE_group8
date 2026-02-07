@@ -1,11 +1,11 @@
 import { Link, useLocation } from 'react-router-dom'
 import logoSrc from '../images/logo.png'
-import { useEffect } from 'react'
+import { useState } from 'react'
 import helpSrc from '../images/help_icon.png'
 
 export default function Nav() {
   const { pathname } = useLocation()
-
+  const [showHelp, setShowHelp] = useState(false)
   //base styles for nav links
   const base = {
     color: 'white',
@@ -27,6 +27,7 @@ export default function Nav() {
   }
 
   return (
+    <div>
     <nav style={{
       display: 'flex',
       alignItems: 'center',
@@ -42,7 +43,8 @@ export default function Nav() {
 
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <button onClick={() => setShowHelp(!showHelp)}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight:16 }} title='Help'>
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight:16 }} 
+          title="Help">
           <img src={helpSrc} alt="Help" style={{ height: 45, width: 'auto' }} />
         </button>
         <Link to="/" title="Start">
@@ -51,6 +53,40 @@ export default function Nav() {
       </div>
     </nav>
 
-    
+    {showHelp && (
+        <div style={{
+          background: '#f0f0f0',
+          padding: '20px 24px',
+          borderBottom: '1px solid #ddd',
+          color: '#222',
+          fontSize: '14px',
+          lineHeight: '1.6'
+        }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <h3 style={{ marginTop: 0, marginBottom: '12px' }}>Help to Navigate The Site</h3>
+            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              <li><strong>Upload Page:</strong> Select and upload your CSV or Excel files to analyze student data and click on the button to generate the master spreadsheet.</li>
+              <li><strong>Spreadsheet Page:</strong> View the processed data in table format after uploading files from the previous page</li>
+              <li><strong>Report Page:</strong> See detailed analysis and insights about the uploaded student data.</li>
+            </ul>
+            <button
+              onClick={() => setShowHelp(false)}
+              style={{
+                marginTop: '12px',
+                padding: '8px 16px',
+                background: '#2c3e50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
