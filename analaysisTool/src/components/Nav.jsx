@@ -1,5 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import logoSrc from '../images/logo.png'
+import { useEffect } from 'react'
+import helpSrc from '../images/help_icon.png'
 
 export default function Nav() {
   const { pathname } = useLocation()
@@ -39,10 +41,16 @@ export default function Nav() {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center' }}>
+        <button onClick={() => setShowHelp(!showHelp)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight:16 }} title='Help'>
+          <img src={helpSrc} alt="Help" style={{ height: 45, width: 'auto' }} />
+        </button>
         <Link to="/" title="Start">
           <img src={logoSrc} alt="Logo" style={{ height: 60, width: 'auto', marginTop: 5}} />
         </Link>
       </div>
     </nav>
+
+    
   )
 }
