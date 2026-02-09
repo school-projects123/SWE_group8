@@ -21,7 +21,7 @@ export default function FileUploader() {
     setShowSuccess(false);
     // NEED TO MAKE THE CORRUPTION LOGIC WORK
     const hasCorrupt = selectedFiles.some((f) =>
-      f.name.toLowerCase().includes("corrupt")
+      f.name.toLowerCase().includes("corrupt"),
     );
     setTimeout(() => {
       setProgress(100);
@@ -61,7 +61,7 @@ export default function FileUploader() {
       }));
     if (badFile) {
       setWarn(
-        "This file is not compatible. Only CSV or Excel files are allowed."
+        "This file is not compatible. Only CSV or Excel files are allowed.",
       );
       setTimeout(() => setWarn(""), 2500);
     }
@@ -90,28 +90,37 @@ export default function FileUploader() {
       const res = await fetch("/process", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       const data = await res.json();
       console.log("Backend responce:", data);
       // not showing up because it is called after the await because browsers block popups outside user-click events
       //alert(JSON.stringify(data)); stops the alert popping up we know it comes up
-      localStorage.setItem("masterData", JSON.stringify({
-        columns: data.masterColumns,
-        rows: data.masterRows
-      }));
-      // switch to page where info was sent
-      window.location.href = "/app/spreadsheet"
+      // localStorage.setItem(
+      //   "masterData",
+      //   JSON.stringify({
+      //     columns: data.masterColumns,
+      //     rows: data.masterRows
+      //   }));
 
-      
+      localStorage.removeItem("masterData");
+      localStorage.setItem(
+        "masterData",
+        JSON.stringify({
+          columns: data.masterColumns,
+          rows: data.masterRows,
+        }),
+      );
+      // switch to page where info was sent
+      window.location.href = "/app/spreadsheet";
     } catch (err) {
       console.error("error sending to backend:", err);
     }
   }
-  function getInfo(){
+  function getInfo() {
     // is called once info is sent to process in backend
     // takes response from backend and gives it to the spreadsheep page
-
   }
 
   //Style and structure of the upload page

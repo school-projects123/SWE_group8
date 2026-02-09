@@ -1,199 +1,121 @@
 import os
 import io
 import re
+import uuid
+import time
 from html import unescape
 
-from flask import (
-    Flask,
-    request,
-    jsonify,
-    send_from_directory,
-    render_template,
-)
+from flask import Flask, request, jsonify, send_from_directory, render_template, session
 from flask_cors import CORS
 import pandas as pd
+
 from compile_tool import detect_gradebook, detect_analytics, build_master_dataframe
 
-app = Flask(
-    __name__,
-    static_folder="../static",
-    template_folder="../templates"
-)
 
-# constants/ compiled regex
+app = Flask(__name__, static_folder="../static", template_folder="../templates")
+
+app.secret_key = "dev-only-change-me"
+
+# If frontend is on a different port (Vite 5173) and you need cookies:
+CORS(app, supports_credentials=True)
+
+# constants / compiled regex
 re_tag = re.compile(r"<.*?>")
 
-CORS(app)
+# Per-session store in memory (NOT shared between users)
+SESSION_STORE = {}  
+SESSION_TTL_SECONDS = 30 * 60  # 30 mins (optional auto cleanup)
 
-def get_courses_from_req(request):
-    # old loop was fragile and sometimes skipped files
-    # now builds 1 pandas DataFrame PER uploaded file.
-    # Each file is stored directly – NO dict roundtrip
-    #info = request.get_json
-    #num_of_files = int(file_info["num_of_files"])
+
+def get_sid():
+    if "sid" not in session:
+        session["sid"] = str(uuid.uuid4())
+    return session["sid"]
+
+
+def cleanup_sessions():
+    now = time.time()
+    expired = [
+        sid for sid, data in SESSION_STORE.items()
+        if now - data.get("ts", now) > SESSION_TTL_SECONDS
+    ]
+    for sid in expired:
+        del SESSION_STORE[sid]
+
+
+def strip_html(text):
+    if isinstance(text, str):
+        return re_tag.sub("", unescape(text))
+    return text
+
+
+def get_courses_from_req(req):
     courses = {}
-    for key, file in request.files.items():
 
-        # Only process uploaded file fields
+    for key, file in req.files.items():
         if not key.startswith("file_"):
             continue
 
         i = key.split("_")[1]
-        course = request.form.get(f"course_{i}", "unknown")
+        course = req.form.get(f"course_{i}", "unknown")
 
-        if course not in courses:
-            courses[course] = []
-        # in case there isn't a course (because that's not implemented yet)
+        courses.setdefault(course, [])
 
         try:
-            # read excel/csv
-            file_extrac = file.filename.split(".")[-1].lower()
-            body_content = {}
+            file_ext = file.filename.split(".")[-1].lower()
 
-            if file_extrac == "csv":
+            if file_ext == "csv":
                 try:
-                    # if file is csv from blackboard it will be utf-8 with BOM
-                    df = pd.read_csv(file, encoding = "utf-8-sig")
-                except:
-                    # if it is xls or xlsx it will be utf-16
-                    file.seek(0)                      
-                    df = pd.read_csv(file, encoding = "utf-16")
-                #print("csv uploaded")
-                # currently preview first 3 rows for preview but is converted to a python dict for the version with all info 
-                preview_text = df.head(3).to_csv(index = False) 
-                body_content = df.head().to_dict(orient = 'records')
-            elif file_extrac == "xlsx":
-                df = pd.read_excel(file, engine="openpyxl")
-                #print("xlsx type file uploaded")
-                preview_text = df.head(3).to_csv(index=False)
-                body_content = df.head().to_dict(orient = 'records')
-            # most files downloaded from blackboard are this type
-            elif file_extrac == "xls":
-                    # go to reading as CSV/ UTF-16 text - was having issues because its a bof type file not a biff type file?
-                    # check what type of file it is
+                    df = pd.read_csv(file, encoding="utf-8-sig")
+                except Exception:
                     file.seek(0)
-                    file_bytes = file.read()
-                    
-                    # read as tsl file if it detects BOM becuase its not a proper excel/csv (because its downloaded from blackboard)
-                    if file_bytes.startswith(b"\xff\xfe") or file_bytes.startswith(b"\xfe\xff"):
-                        text = file_bytes.decode("utf-16")
+                    df = pd.read_csv(file, encoding="utf-16")
+
+            elif file_ext == "xlsx":
+                df = pd.read_excel(file, engine="openpyxl")
+
+            elif file_ext == "xls":
+                file.seek(0)
+                file_bytes = file.read()
+
+                # fake-xls (often tab-separated text)
+                if file_bytes.startswith(b"\xff\xfe") or file_bytes.startswith(b"\xfe\xff"):
+                    text = file_bytes.decode("utf-16")
+                    df = pd.read_csv(io.StringIO(text), sep="\t")
+                else:
+                    try:
+                        text = file_bytes.decode("utf-8-sig")
                         df = pd.read_csv(io.StringIO(text), sep="\t")
-                        #print("is weird tsl (pretending to be xls) file",df)
-                    else:
-                        try:
-                            # try utf 8 first again
-                            text = file_bytes.decode("utf-8-sig")
-                            df = pd.read_excel(io.StringIO(text), sep="\t")
-                            # got rid of try and catch becuse it was getting in the way of debugging
-                            # will add try and except to handle actual malformed files in future
-                            #print("is other weird fake xls file",df)
-                        except Exception:
-                            # fall back onto excel binary format
-                            df = pd.read_excel(io.BytesIO(file_bytes), engine="xlrd")
+                    except Exception:
+                        # real binary xls
+                        df = pd.read_excel(io.BytesIO(file_bytes), engine="xlrd")
+
             else:
-                raise ValueError("Unsupported file type")        
-            
+                raise ValueError("Unsupported file type")
+
             # clean html safely
             df = df.map(strip_html)
-            
-            # storing as df directly
+
             courses[course].append({
                 "file_name": file.filename,
                 "df": df
-            }) 
-            # this generates the wrongly processed file!
-            # preview_text = df.head().to_csv(index=False)
-            # print("normal xls: ",df ) # this one gives cannot access local variable 'df' where it is not associated with a value"
-            # but even when commented an unknown error is still being thrown??
-            # an exception is being thrown
+            })
 
         except Exception as e:
             print("FAILED TO PROCESS FILE:", file.filename, repr(e))
-            # cannot access local variable 'df' where it is not associated with a value"
-            # failuse is flagging files that are also being processed as expected to adding same file twice with different result -
-            # not proper exception handling
 
-        # likely wont need to handle if its a folder because of frontend safeguards
-        # could the same file be uploaded twice? how to deal with it?
-
-    #return jsonify({"status": "success", "results": results})
-    # the temp filepaths probably will be marked as not existing as they are gibberish
-   
-    info = {"courses": courses}
-
-    # Debug print: show filenames only
-    print("INFO STRUCTURE:", {
-        course: [f["file_name"] for f in files]
-        for course, files in courses.items()
-    })
-
-    # debug print: confirm DataFrames are created
-    for course, files in courses.items():
-        for f in files:
-            print("\nDF FOR:", f["file_name"])
-            print(f["df"].head())
-    #print("TYPE:", type(info))
-    #for getting the course name
-    """"
-    for course in info["courses"]["unknown"]:
-        print(course["file_name"])
-    for course in info["courses"]["unknown"]:
-        print(course["preview"])
-    """
-    # info is structred like: 
-    # {"courses":
-    #   {"course_name": - currently "unknown" as that isn'y implented on the front end
-    #       [{"file_name": "the actual name", "file" : [{"the acctual content of the file that kayma needs which is a dict that can be converted back to a dataframe"}]},
-    #        {"file_name": "the actual name", "file" : [{"the dict content of the next file in the course"}]}]}}
-    # eventually it will have multiple course_names with actuall names to parse through
-    return info
-
-# will add call within file processor to cheak that uploaded file isn't malformed - not fully implemented yet
-def safe_dataframe(df):
-    try:
-        # Basic sanity checks
-        # incase a non compatible file is accidentally passed in
-        if df is None:
-            raise ValueError("No data loaded")
-        # wont add an empty file because it has no info
-        if df.empty:
-            raise ValueError("File contains no rows")
-
-        # Force evaluation so it catches parser/data corruption issues
-        df.head(1)
-
-        return None # no error
-    # if something else goes wrong return the error # instead of sending a signal to front end to move on send an error message that the file cannot be read
-    except Exception as e:
-        return f"Malformed or unreadable file: {str(e)}"
-
-# if a value is like <span style="color: #000000">Beijing</span> -  clear it so that it is just Beijing
-def strip_html(text):
-    if isinstance(text, str):
-        # unescape enteties (&amp, etc..) and strip tags
-        return re_tag.sub("",unescape(text))
-    return text
-# takes in output from file processing, will be useful for Kayma's code as it returns a df of file info
-# returns one df per course
+    return {"courses": courses}
 
 
-def get_all_courses(info:dict):
-    return NotImplementedError
-
-# This script will retrive the information from the upload page and store/ sort the excel files depending on the courses they are assigned to
-# for now file info is being passed in the function directly to mock the json responce
-# file_info = {"num_of_files":"N", "file_0": {"name": "name.csv","FormData": "what everform data looks like", "course": "CS3400"},..., "file_N":{}}
-# likely recived via a POST from front end that sends a json that can be read as a python dict /process with be the front end command thats sends the files to be processed once the gen report button is clicked
 @app.route("/process", methods=["POST"])
-
-# funtion to process input from react frontend
 def process_file():
-    global last_master_columns, last_master_rows
+    cleanup_sessions()
+    sid = get_sid()
 
     info = get_courses_from_req(request)
     courses = info["courses"]
 
-    # collect all DataFrames that have a Username column
+    # Collect dfs with Username column
     uploaded_dfs = []
     for course, files in courses.items():
         for f in files:
@@ -207,71 +129,63 @@ def process_file():
     gradebook_df = None
     analytics_df = None
 
-    # detect gradebook + analytics using your compile_tool helpers
     for df in uploaded_dfs:
         if gradebook_df is None and detect_gradebook(df):
             gradebook_df = df
         elif analytics_df is None and detect_analytics(df):
             analytics_df = df
 
-    # reset master
-    last_master_columns = []
-    last_master_rows = []
+    if gradebook_df is None or analytics_df is None:
+        return jsonify({"error": "Could not detect both Gradebook + Analytics files."}), 400
 
-    if gradebook_df is not None and analytics_df is not None:
-        master_df = build_master_dataframe(gradebook_df, analytics_df)
+    master_df = build_master_dataframe(gradebook_df, analytics_df)
 
-        # 🔹 convert NaN → None so JSON is valid for the browser
-        master_df = master_df.astype(object).where(pd.notnull(master_df), None)
 
-        last_master_columns = master_df.columns.tolist()
-        last_master_rows = master_df.to_dict(orient="records")
+    master_df = master_df.astype(object).where(pd.notnull(master_df), None)
 
-        print("Built master spreadsheet with", len(last_master_rows), "rows.")
-    else:
-        print("Could not detect gradebook/analytics files.")
+    master_columns = master_df.columns.tolist()
+    master_rows = master_df.to_dict(orient="records")
 
-    # keep the old "courses" style output as well
-    # note:
-    # cant jsonify pandas DataFrames directly.
-    # If later need to send data to the frontend,
-    # convert each df using:
-    #
-    # df.to_dict(orient="records")
+    SESSION_STORE[sid] = {
+        "masterColumns": master_columns,
+        "masterRows": master_rows,
+        "ts": time.time()
+    }
+
+    print(f"[SID {sid}] Built master spreadsheet with {len(master_rows)} rows.")
 
     return jsonify({
-        "courses": {
-            course: [
-                {"file_name": f["file_name"]}
-                for f in files
-            ]
-            for course, files in info["courses"].items()
-        },
-        "masterColumns": last_master_columns,
-        "masterRows": last_master_rows
+        "masterColumns": master_columns,
+        "masterRows": master_rows
     })
 
-# ROUTES FOR FRONTEND
 
 @app.route("/master", methods=["GET"])
 def get_master():
-    # This is what Spreadsheet.jsx calls
+    cleanup_sessions()
+    sid = get_sid()
+
+    data = SESSION_STORE.get(sid)
+    if not data:
+        return jsonify({"masterColumns": [], "masterRows": []})
+
     return jsonify({
-        "masterColumns": last_master_columns,
-        "masterRows": last_master_rows
+        "masterColumns": data["masterColumns"],
+        "masterRows": data["masterRows"]
     })
 
+
+# Serve frontend (Flask version)
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
     static_path = os.path.join(app.static_folder, path)
 
-
     if path != "" and os.path.exists(static_path):
         return send_from_directory(app.static_folder, path)
 
-
     return render_template("index.html")
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5000, debug=True)
