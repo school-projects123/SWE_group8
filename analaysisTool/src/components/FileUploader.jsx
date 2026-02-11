@@ -1,14 +1,14 @@
 import React, { useState, useRef } from "react";
 
 export default function FileUploader() {
-  //define states
+  // define states
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [warn, setWarn] = useState("");
 
-  //function sets restrictions for if file is chosen and which file types are allowed
+  // function sets restrictions for if file is chosen and which file types are allowed
   function showLoading() {
     if (selectedFiles.length === 0) {
       setWarn("You have not selected any files.");
@@ -19,9 +19,9 @@ export default function FileUploader() {
     setLoading(true);
     setProgress(50);
     setShowSuccess(false);
-    //NEED TO MAKE THE CORRUPTION LOGIC WORK
+    // NEED TO MAKE THE CORRUPTION LOGIC WORK
     const hasCorrupt = selectedFiles.some((f) =>
-      f.name.toLowerCase().includes("corrupt")
+      f.name.toLowerCase().includes("corrupt"),
     );
     setTimeout(() => {
       setProgress(100);
@@ -35,13 +35,13 @@ export default function FileUploader() {
     }, 1000);
   }
 
-  //once files are selected, this function processes them - their names & types are extracted - NEEDTO MAKE WORL
+  // once files are selected, this function processes them - their names & types are extracted - NEED TO MAKE WORK
   async function parseFile(fileObj) {
     return { filename: fileObj.name, data: [] };
   }
 
-  // should probubly limit the size of files that can be uploaded? or the number of files or both
-  //main part of the page with the upload button and file selection area
+  // should probably limit the size of files that can be uploaded? or the number of files or both
+  // main part of the page with the upload button and file selection area
   function handleFileSelect(e) {
     const fileList = e.target.files;
     if (!fileList || fileList.length === 0) return;
@@ -61,7 +61,7 @@ export default function FileUploader() {
       }));
     if (badFile) {
       setWarn(
-        "This file is not compatible. Only CSV or Excel files are allowed."
+        "This file is not compatible. Only CSV or Excel files are allowed.",
       );
       setTimeout(() => setWarn(""), 2500);
     }
@@ -82,7 +82,7 @@ export default function FileUploader() {
 
     selectedFiles.forEach((fileObj, i) => {
       formData.append(`file_${i}`, fileObj.file);
-      //formData.append(`course_${i}`,fileObj.course || "") //not yet implemented course selection
+      //formData.append(`course_${i}`,fileObj.course || "") // not yet implemented course selection
     });
     formData.append("numOfFiles", selectedFiles.length);
     try {
@@ -90,28 +90,37 @@ export default function FileUploader() {
       const res = await fetch("/process", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       const data = await res.json();
       console.log("Backend responce:", data);
       // not showing up because it is called after the await because browsers block popups outside user-click events
-      alert(JSON.stringify(data));
-      localStorage.setItem("masterData", JSON.stringify({
-        columns: data.masterColumns,
-        rows: data.masterRows
-      }));
-      // switch to page where info was sent
-      window.location.href = "/app/spreadsheet"
+      //alert(JSON.stringify(data)); stops the alert popping up we know it comes up
+      // localStorage.setItem(
+      //   "masterData",
+      //   JSON.stringify({
+      //     columns: data.masterColumns,
+      //     rows: data.masterRows
+      //   }));
 
-      
+      localStorage.removeItem("masterData");
+      localStorage.setItem(
+        "masterData",
+        JSON.stringify({
+          columns: data.masterColumns,
+          rows: data.masterRows,
+        }),
+      );
+      // switch to page where info was sent
+      window.location.href = "/app/spreadsheet";
     } catch (err) {
       console.error("error sending to backend:", err);
     }
   }
-  function getInfo(){
-    // is called once info is sent to process in backend#
-    // takes responce from backend and gives it to the spreadsheep page
-
+  function getInfo() {
+    // is called once info is sent to process in backend
+    // takes response from backend and gives it to the spreadsheep page
   }
 
   //Style and structure of the upload page
@@ -235,7 +244,7 @@ export default function FileUploader() {
             />
           </label>
           <button
-            //maybe in next commit make an handleUploadClick fuction so its cleaner
+            // maybe in next commit make an handleUploadClick function so its cleaner
             onClick={() => {
               showLoading();
               sendInfo();

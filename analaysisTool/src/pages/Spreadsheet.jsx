@@ -11,10 +11,12 @@ export default function Spreadsheet() {
       try {
         // Frontend:  http://localhost:5173
         // Backend:   http://localhost:5000
-        const res = await fetch("/master");
+        const res = await fetch("/master", {
+          credentials: "include",
+        });
         const text = await res.text();
-        setLoading(true)
-        const saved = localStorage.getItem("masterData")
+        setLoading(true);
+        const saved = localStorage.getItem("masterData");
         if (saved) {
           const data = JSON.parse(saved);
 
@@ -26,10 +28,10 @@ export default function Spreadsheet() {
         let data;
         try {
           data = JSON.parse(text);
-          alert(JSON.stringify(data))
+          alert(JSON.stringify(data));
         } catch (e) {
           console.error("Response was not valid JSON:", text);
-          console.log(text)
+          console.log(text);
           setError("Server response was not valid JSON.");
           setLoading(false);
           return;
@@ -43,16 +45,15 @@ export default function Spreadsheet() {
         }
 
         localStorage.setItem(
-            "masterData",
-            JSON.stringify({
-              columns: data.masterColumns || [],
-              rows: data.masterRows || [],
-            })
-          );
+          "masterData",
+          JSON.stringify({
+            columns: data.masterColumns || [],
+            rows: data.masterRows || [],
+          }),
+        );
 
-          setColumns(data.masterColumns || []);
-          setRows(data.masterRows || []);
-
+        setColumns(data.masterColumns || []);
+        setRows(data.masterRows || []);
       } catch (err) {
         console.error("Fetch error:", err);
         setError("Could not reach the server.");

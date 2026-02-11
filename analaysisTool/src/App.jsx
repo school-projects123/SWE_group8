@@ -3,6 +3,7 @@ import Start from './pages/Start'
 import Upload from './pages/Upload'
 import Spreadsheet from './pages/Spreadsheet'
 import Report from './pages/Report'
+import Login from './pages/Login'
 import Layout from './components/Layout'
 import './index.css'
 
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="spreadsheet" element={<Spreadsheet />} />
         <Route path="report" element={<Report />} />
       </Route>
+      <Route path="/login" element={<Login />} /> 
     </Routes>
   )
 }

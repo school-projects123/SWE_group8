@@ -57,7 +57,7 @@ export default function Start() {
       <div className="start-wrap">
         <img src={logoSrc} alt="Analysis Tool" className="start-logo" />
         <div className="start-actions">
-          <button className="btn" onClick={() => navigate('/app')}>Begin</button>
+          <button className="btn" onClick={() => navigate('/login')}>Begin</button> 
         </div>
       </div>
     </main>
