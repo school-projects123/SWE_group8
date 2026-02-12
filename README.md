@@ -27,9 +27,9 @@ vite/react - running frontend:
     npm run dev
 
 # Notes for running (Mac/Linux)
-Assuming you are in the github repo root folder (so 'SWE_GROUP8').
+Assuming you are in the GitHub repo root folder (so 'SWE_GROUP8').
 
-Run the following command (may also need to seperately pip install pandas,flask_cors,flask), only need to do this the first time:
+Run the following command (may also need to seperately pip install pandas,flask_cors,flask?), this only needs to be done the first time:
 
 > python3 -m pip install -r analaysisTool/requirements.txt
 
@@ -37,8 +37,8 @@ Use the following command to run the app:
 
 > cd analaysisTool && npm run dev
 
-If that gives permission error, use this to reset the folder owner:
+If that gives permission error, use this to reset the folder owner and try again:
 
 > sudo chown -R $(whoami) .
 
-Click on the link (e.g. http://127.0.0.1:5000) to open the webpage/frontend.
+Click on the link (e.g. http://localhost:5173/) to open the webpage/frontend.
