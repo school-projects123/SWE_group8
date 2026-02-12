@@ -35,7 +35,7 @@ Run the following command (may also need to seperately pip install pandas,flask_
 
 Use the following command to run the app:
 
-> cd analysisTool && npm run dev
+> cd analaysisTool && npm run dev
 
 If that gives permission error, use this to reset the folder owner:
 

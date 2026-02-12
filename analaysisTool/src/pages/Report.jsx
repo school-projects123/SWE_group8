@@ -121,7 +121,7 @@ export default function Upload() {
     }
 
     const renderTableJSX = () => ( // data table
-        <table border="1" style={{ borderCollapse: 'collapse', fontSize: 12, lineHeight: 1.2 }}>
+        <table border="1" style={{ borderCollapse: 'collapse', fontSize: 12, lineHeight: 1.2, color: "#000"}}>
             <thead>
                 <tr>{FIELDS.map(f => <th key={f}>{f}</th>)}</tr>
             </thead>
@@ -213,7 +213,7 @@ export default function Upload() {
                                 </div>
 
                             </div>
-                            <div style={{ width: "80%", backgroundColor: "#ffffff", padding: "20px", boxSizing: "border-box" }}>
+                            <div style={{ width: "80%", backgroundColor: "#ffffff", padding: "20px", boxSizing: "border-box", color: "#000" }}>
                                 <h2>Actual Charts:</h2>
                                 <div id="chartDiv"></div>
                                 <div id="userDiv">{renderTableJSX()}</div>
