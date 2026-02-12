@@ -83,6 +83,7 @@ export default function Spreadsheet() {
     <div>
       <h1>Master Spreadsheet</h1>
       <div style={{ overflowX: "auto", maxHeight: "70vh", overflowY: "auto" }}>
+        <button style={{ marginBottom: "10px" }}>Download</button>
         <table border="1" cellPadding="4">
           <thead>
             <tr>
