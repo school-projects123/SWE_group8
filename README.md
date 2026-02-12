@@ -33,12 +33,12 @@ Run the following command (may also need to seperately pip install pandas,flask_
 
 > python3 -m pip install -r analaysisTool/requirements.txt
 
-Use the following command to update it to include changes (but it seems this doesn't work properly and saves the new version to another directory, and at any rate the .js this produces doesn't seem to work for me).
+Use the following command to run it
 
-> sudo npm run build
+> cd analysisTool && npm run dev
 
-To run the programme:
+If this gives permission error:
 
-> python3 -m analaysisTool.backend.processing_excel
+> sudo chown -R $(whoami) .
 
 Click on the link (e.g. http://127.0.0.1:5000) to open the webpage/frontend.
