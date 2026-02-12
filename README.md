@@ -4,12 +4,12 @@ Principles of Software Engineering Project
 Blackboard Analysis Tool
 
 # Note for running (while in dev) (Windows)
-Need to use two different terminals (eg powershell, cmd). This is just temp until a proper pipline is set up.
+Need to use two different terminals (eg Powershell, CMD). This is just temp until a proper pipline is set up.
 ## Activate the environment
 Powershell:
 > Set-ExecutionPolicy Bypass -Scope Process
 
-to temp allow activation because powershell doesn't like it for some reason, then run: 
+to temp allow activation because Powershell doesn't like it for some reason, then run: 
 > .venv\Scripts\Activate.ps1
 
 CMD:
@@ -33,7 +33,7 @@ Run the following command (may also need to seperately pip install pandas,flask_
 
 > python3 -m pip install -r analaysisTool/requirements.txt
 
-One might say to use the following command to update it to include changes, but it seems that this doesn't work properly and saves the new stuff to another directory, and at any rate the .js it produces doesn't seem to work for me.
+Use the following command to update it to include changes (but it seems this doesn't work properly and saves the new version to another directory, and at any rate the .js this produces doesn't seem to work for me).
 
 > sudo npm run build
 
