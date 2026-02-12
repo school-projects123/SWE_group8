@@ -33,11 +33,11 @@ Run the following command (may also need to seperately pip install pandas,flask_
 
 > python3 -m pip install -r analaysisTool/requirements.txt
 
-Use the following command to run it
+Use the following command to run the app:
 
 > cd analysisTool && npm run dev
 
-If this gives permission error:
+If that gives permission error, use this to reset the folder owner:
 
 > sudo chown -R $(whoami) .
 
