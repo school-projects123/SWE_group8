@@ -6,13 +6,38 @@ export default function Spreadsheet() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const handleDownload = async () => {
+    try {
+      const res = await fetch("/master/download", {
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        alert("Failed to download spreadsheet");
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "master_spreadsheet.csv";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Could not download the spreadsheet");
+    }
+  };
+
   useEffect(() => {
     async function fetchMaster() {
       setLoading(true);
       setError("");
 
       try {
-        // OPTIONAL: if you still want to show cached data instantly
         const saved = localStorage.getItem("masterData");
         if (saved) {
           const cached = JSON.parse(saved);
@@ -23,7 +48,6 @@ export default function Spreadsheet() {
         const res = await fetch("/master", { credentials: "include" });
 
         if (!res.ok) {
-          // Friendly message (not technical)
           setError(
             "We couldn’t load the spreadsheet right now. Please try again.",
           );
@@ -33,16 +57,12 @@ export default function Spreadsheet() {
         }
 
         const data = await res.json();
-
         const masterColumns = data.masterColumns || [];
         const masterRows = data.masterRows || [];
 
-        // ✅ If user hasn’t uploaded anything yet, this is NOT an error
         if (masterColumns.length === 0 || masterRows.length === 0) {
           setColumns([]);
           setRows([]);
-
-          // Clear cached data so it doesn’t show an old spreadsheet
           localStorage.removeItem("masterData");
           return;
         }
@@ -50,7 +70,6 @@ export default function Spreadsheet() {
         setColumns(masterColumns);
         setRows(masterRows);
 
-        // Cache the latest spreadsheet for refreshes
         localStorage.setItem(
           "masterData",
           JSON.stringify({ columns: masterColumns, rows: masterRows }),
@@ -71,37 +90,19 @@ export default function Spreadsheet() {
   }, []);
 
   if (loading) {
-    return <p>Loading master spreadsheet...</p>;
+    return (
+      <p style={{ textAlign: "center", marginTop: "40px" }}>
+        Loading master spreadsheet...
+      </p>
+    );
   }
 
-  const handleDownload = async () => {
-    try {
-      const res = await fetch("/master/download", {
-        credentials: "include",
-      });
-      
-      if (!res.ok) {
-        alert("Failed to download spreadsheet");
-        return;
-      }
-      
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "master_spreadsheet.csv";
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (err) {
-      console.error("Download error:", err);
-      alert("Could not download the spreadsheet");
-    }
-  };
-
   if (error) {
-    return <p style={{ color: "red" }}>{error}</p>;
+    return (
+      <p style={{ color: "red", textAlign: "center", marginTop: "40px" }}>
+        {error}
+      </p>
+    );
   }
 
   if (!columns.length || !rows.length) {
@@ -129,39 +130,59 @@ export default function Spreadsheet() {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        textAlign: "center",
+        width: "100%",
+        marginTop: "40px",
+      }}
+    >
+      <h1 style={{ marginBottom: "10px" }}>Master Spreadsheet</h1>
 
-      <div style={{ 
-        display: "flex", 
-        alignItems: "center", 
-        justifyContent: "space-between",
-        marginBottom: "1rem", 
-        marginLeft: "1rem",
-      }}>
-      <h1>Master Spreadsheet</h1>
-            <button 
+      <button
         onClick={handleDownload}
         style={{
-          marginBottom: "1rem",
-          marginTop: "2rem",
-          marginRight: "40rem",
-          padding: "0.5rem 1rem",
+          marginBottom: "20px",
+          padding: "12px 24px",
           backgroundColor: "#4CAF50",
           color: "white",
           border: "none",
-          borderRadius: "4px",
+          borderRadius: "8px",
           cursor: "pointer",
-          fontSize: "1rem"
+          fontSize: "16px",
         }}
-        onMouseOver={(e) => e.target.style.backgroundColor = "#45a049"}
-        onMouseOut={(e) => e.target.style.backgroundColor = "#4CAF50"}
+        onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
+        onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
       >
         Download Master Spreadsheet
       </button>
-      </div>
-      <div style={{ overflowX: "auto", maxHeight: "70vh", overflowY: "auto" }}>
-        <table border="1" cellPadding="4">
-          <thead>
+
+      <div
+        style={{
+          overflowX: "auto",
+          overflowY: "auto",
+          maxHeight: "70vh",
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <table
+          border="1"
+          cellPadding="6"
+          style={{
+            borderCollapse: "collapse",
+            textAlign: "center",
+            backgroundColor: "white",
+            color: "black",
+            minWidth: "600px",
+          }}
+        >
+          <thead style={{ backgroundColor: "#22304A", color: "white" }}>
             <tr>
               {columns.map((col) => (
                 <th key={col}>{col}</th>
