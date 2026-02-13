@@ -112,7 +112,7 @@ export default function Login() {
             <input
               type="email"
               value={email}
-              placeholder="Username"
+              placeholder="Email Address"
               onChange={(e) => setEmail(e.target.value)}
               style={{
                 width: "100%",
