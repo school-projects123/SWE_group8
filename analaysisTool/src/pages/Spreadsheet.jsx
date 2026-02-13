@@ -8,55 +8,60 @@ export default function Spreadsheet() {
 
   useEffect(() => {
     async function fetchMaster() {
+      setLoading(true);
+      setError("");
+
       try {
-        // Frontend:  http://localhost:5173
-        // Backend:   http://localhost:5000
-        const res = await fetch("/master", {
-          credentials: "include",
-        });
-        const text = await res.text();
-        setLoading(true);
+        // OPTIONAL: if you still want to show cached data instantly
         const saved = localStorage.getItem("masterData");
         if (saved) {
-          const data = JSON.parse(saved);
+          const cached = JSON.parse(saved);
+          setColumns(cached.columns || []);
+          setRows(cached.rows || []);
+        }
 
-          setColumns(data.columns || []);
-          setRows(data.rows || []);
-          setLoading(false);
-          return;
-        }
-        let data;
-        try {
-          data = JSON.parse(text);
-          alert(JSON.stringify(data));
-        } catch (e) {
-          console.error("Response was not valid JSON:", text);
-          console.log(text);
-          setError("Server response was not valid JSON.");
-          setLoading(false);
-          return;
-        }
+        const res = await fetch("/master", { credentials: "include" });
 
         if (!res.ok) {
-          setError(data.error || "Something went wrong.");
-        } else {
-          setColumns(data.masterColumns || []);
-          setRows(data.masterRows || []);
+          // Friendly message (not technical)
+          setError(
+            "We couldn’t load the spreadsheet right now. Please try again.",
+          );
+          setColumns([]);
+          setRows([]);
+          return;
         }
 
+        const data = await res.json();
+
+        const masterColumns = data.masterColumns || [];
+        const masterRows = data.masterRows || [];
+
+        // ✅ If user hasn’t uploaded anything yet, this is NOT an error
+        if (masterColumns.length === 0 || masterRows.length === 0) {
+          setColumns([]);
+          setRows([]);
+
+          // Clear cached data so it doesn’t show an old spreadsheet
+          localStorage.removeItem("masterData");
+          return;
+        }
+
+        setColumns(masterColumns);
+        setRows(masterRows);
+
+        // Cache the latest spreadsheet for refreshes
         localStorage.setItem(
           "masterData",
-          JSON.stringify({
-            columns: data.masterColumns || [],
-            rows: data.masterRows || [],
-          }),
+          JSON.stringify({ columns: masterColumns, rows: masterRows }),
         );
-
-        setColumns(data.masterColumns || []);
-        setRows(data.masterRows || []);
       } catch (err) {
         console.error("Fetch error:", err);
-        setError("Could not reach the server.");
+        setError(
+          "We couldn’t connect to the server. Please check it’s running.",
+        );
+        setColumns([]);
+        setRows([]);
       } finally {
         setLoading(false);
       }
@@ -73,9 +78,28 @@ export default function Spreadsheet() {
     return <p style={{ color: "red" }}>{error}</p>;
   }
 
+  // ✅ Friendly “no data yet” message (instead of scary JSON error)
   if (!columns.length || !rows.length) {
     return (
-      <p>No master spreadsheet yet. Please upload and process files first.</p>
+      <div style={{ textAlign: "center", marginTop: "40px" }}>
+        <p style={{ fontSize: "18px" }}>
+          No spreadsheet yet. Please upload your files on the Upload page first.
+        </p>
+        <button
+          onClick={() => (window.location.href = "/app")}
+          style={{
+            marginTop: "16px",
+            padding: "12px 24px",
+            background: "#22304A",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+        >
+          Go to Upload Page
+        </button>
+      </div>
     );
   }
 
@@ -84,6 +108,7 @@ export default function Spreadsheet() {
       <h1>Master Spreadsheet</h1>
       <div style={{ overflowX: "auto", maxHeight: "70vh", overflowY: "auto" }}>
         <button style={{ marginBottom: "10px" }}>Download</button>
+
         <table border="1" cellPadding="4">
           <thead>
             <tr>
@@ -92,6 +117,7 @@ export default function Spreadsheet() {
               ))}
             </tr>
           </thead>
+
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
