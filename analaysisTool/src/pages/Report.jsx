@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 // IMPROVEMENTS FOR JAN-APRIL:
-// need to improve so that large files aren't truncated in the report page output
+// need to improve so that this can handle when there are a lot of students, add search function to the dropdown,
+// better sort of truncation for the tables, as the bar chart would get very weird if there is 100 students
 // also adding more visualisation graphics for the data
 export default function Upload() {
     const [jsonData, setJsonData] = useState([]);
@@ -71,7 +72,7 @@ export default function Upload() {
         }));
     }
 
-    function plotEssayVsExamFromTable(data) { // word count vs score scatter plot
+    function plotEssayVsExamFromTable(data) { // essay vs exam score scatter plot
         const points = data
             .map(u => {
                 const wordNum = parseFloat(u['Essay Score (Raw)'] || '');
@@ -92,7 +93,6 @@ export default function Upload() {
             { id: 'scatterDiv' }
         );
         scatterDiv.innerHTML = ''; // clear previous content
-
         const container = document.createElement('div');
         container.style.width = '150%';
         container.style.margin = '0 auto';
@@ -121,7 +121,7 @@ export default function Upload() {
     }
 
     const renderTableJSX = () => ( // data table
-        <table border="1" style={{ borderCollapse: 'collapse', fontSize: 12, lineHeight: 1.2 }}>
+        <table border="1" style={{ borderCollapse: 'collapse', fontSize: 12, lineHeight: 1.2, color: "#000"}}>
             <thead>
                 <tr>{FIELDS.map(f => <th key={f}>{f}</th>)}</tr>
             </thead>
@@ -158,7 +158,7 @@ export default function Upload() {
         <div style={{ display: "flex", flexDirection: "column", boxSizing: "border-box", overflow: "hidden" }}>
             <noscript>Please enable Javascript to run this app.</noscript>
             <div id="topBar" style={{ display: "flex", width: "100%", backgroundColor: "#2563eb", maxWidth: "100%", textAlign: "center", boxSizing: "border-box" }}>
-                <p>Welcome to the report page.</p>
+                <p>Welcome to the Report Page. View student analytics here after uploading your files.</p>
             </div>
             <div className="display" style={{ height: "100%", flex: 1, backgroundColor: "lightblue", maxWidth: "100%" }}>
                 <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
@@ -183,7 +183,7 @@ export default function Upload() {
                     </div>
                     <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
                         <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
-                            <div style={{ width: "20%", backgroundColor: "#fbfbfbff", color: "#000", padding: "10px", boxSizing: "border-box" }}>
+                            <div style={{ width: "20%", backgroundColor: "rgb(144, 144, 144)", color: "#000", padding: "10px", boxSizing: "border-box" }}>
                                 <h2 style={{ margin: 0, color: "#000"}}>Student View</h2>
                                 <p>Here you can see the details for the selected student.</p>
 
@@ -213,7 +213,7 @@ export default function Upload() {
                                 </div>
 
                             </div>
-                            <div style={{ width: "80%", backgroundColor: "#ffffff", padding: "20px", boxSizing: "border-box" }}>
+                            <div style={{ width: "80%", backgroundColor: "#ffffff", padding: "20px", boxSizing: "border-box", color: "#000" }}>
                                 <h2>Actual Charts:</h2>
                                 <div id="chartDiv"></div>
                                 <div id="userDiv">{renderTableJSX()}</div>

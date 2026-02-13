@@ -17,7 +17,7 @@ app = Flask(__name__, static_folder = "../static", template_folder="../templates
 #to allow for cross platform communication (flask and vite are on diff [ports for development] doesnt make a diffrence in production)
 CORS(app)
 
-# these are the react serving routes
+# these are the React serving routes
 # Serve the React homepage
 
 # need to add a message that sends to front end if there are file issues , rn it just says that the files were uploaded
@@ -80,7 +80,7 @@ def get_courses_from_req(request):
                             # try utf 8 first again
                             text = file_bytes.decode("utf-8-sig")
                             df = pd.read_excel(io.StringIO(text), sep="\t")
-                            # got rid of try and catch becuse it was getting in the way of debugging
+                            # got rid of try and catch because it was getting in the way of debugging
                             # will add try and except to handle actual malformed files in future
                             #print("is other weird fake xls file",df)
                         except Exception:
@@ -106,7 +106,7 @@ def get_courses_from_req(request):
         except Exception as e:
             print("FAILED TO PROCESS FILE:", file.filename, repr(e))
             # cannot access local variable 'df' where it is not associated with a value"
-            # failuse is flagging files that are also being processed as expected to adding same file twice with different result -
+            # failuse is flagging files that are also being processed as expected to adding same file twice with different result:
             # not proper exception handling
 
         # likely won't need to handle if its a folder because of frontend safeguards
@@ -149,10 +149,10 @@ def get_courses_from_req(request):
 def safe_dataframe(df):
     try:
         # Basic sanity checks
-        # incase a non compatible file is accidentally passed in
+        # in case a non-compatible file is accidentally passed in
         if df is None:
             raise ValueError("No data loaded")
-        # wont add an empty file because it has no info
+        # won't add an empty file because it has no info
         if df.empty:
             raise ValueError("File contains no rows")
 
@@ -164,7 +164,7 @@ def safe_dataframe(df):
     except Exception as e:
         return f"Malformed or unreadable file: {str(e)}"
 
-# if a value is like <span style="color: #000000">Beijing</span> -  clear it so that it is just Beijing
+# if a value is like <span style="color: #000000">Beijing</span> - clear it so that it is just Beijing
 def strip_html(text):
     if isinstance(text, str):
         # unescape enteties (&amp, etc..) and strip tags
@@ -213,7 +213,7 @@ def process_file():
     gradebook_df = None
     analytics_df = None
 
-    # detect gradebook + analytics using your compile_tool helpers
+    # detect gradebook + analytics using the compile_tool helpers
     for df in uploaded_dfs:
         if gradebook_df is None and detect_gradebook(df):
             gradebook_df = df
@@ -227,7 +227,7 @@ def process_file():
     if gradebook_df is not None and analytics_df is not None:
         master_df = build_master_dataframe(gradebook_df, analytics_df)
 
-        # 🔹 convert NaN → None so JSON is valid for the browser
+        # convert NaN → None so JSON is valid for the browser
         master_df = master_df.astype(object).where(pd.notnull(master_df), None)
 
         last_master_columns = master_df.columns.tolist()
@@ -270,7 +270,6 @@ def index(path):
     return render_template("index.html")
 
 if __name__ =="__main__":
-    # app.run(port=5000, debug=True)
     # dummy file_info dict to use for now
     #python anywhere ignores this
     app.run(port=5000,debug=True)

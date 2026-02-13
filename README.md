@@ -4,12 +4,12 @@ Principles of Software Engineering Project
 Blackboard Analysis Tool
 
 # Note for running (while in dev) (Windows)
-Need to use two different terminals (eg powershell, cmd). This is just temp until a proper pipline is set up.
+Need to use two different terminals (eg Powershell, CMD). This is just temp until a proper pipline is set up.
 ## Activate the environment
 Powershell:
 > Set-ExecutionPolicy Bypass -Scope Process
 
-to temp allow activation because powershell doesn't like it for some reason, then run: 
+to temp allow activation because Powershell doesn't like it for some reason, then run: 
 > .venv\Scripts\Activate.ps1
 
 CMD:
@@ -27,18 +27,18 @@ vite/react - running frontend:
     npm run dev
 
 # Notes for running (Mac/Linux)
-Assuming you are in the github repo root folder (so 'SWE_GROUP8').
+Assuming you are in the GitHub repo root folder (so 'SWE_GROUP8').
 
-Run the following command (may also need to seperately pip install pandas,flask_cors,flask), only need to do this the first time:
+Run the following command (may also need to seperately pip install pandas,flask_cors,flask?), this only needs to be done the first time:
 
 > python3 -m pip install -r analaysisTool/requirements.txt
 
-One might say to use the following command to update it to include changes, but it seems that this doesn't work properly and saves the new stuff to another directory, and at any rate the .js it produces doesn't seem to work for me.
+Use the following command to run the app:
 
-> sudo npm run build
+> cd analaysisTool && npm run dev
 
-To run the programme:
+If that gives permission error, use this to reset the folder owner and try again:
 
-> python3 -m analaysisTool.backend.processing_excel
+> sudo chown -R $(whoami) .
 
-Click on the link (e.g. http://127.0.0.1:5000) to open the webpage/frontend.
+Click on the link (e.g. http://localhost:5173/) to open the webpage/frontend.

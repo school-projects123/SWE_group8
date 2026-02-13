@@ -65,9 +65,10 @@ export default function Nav() {
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <h3 style={{ marginTop: 0, marginBottom: '12px' }}>Help to Navigate The Site</h3>
             <ul style={{ margin: 0, paddingLeft: '20px' }}>
-              <li><strong>Upload Page:</strong> Select and upload your CSV or Excel files to analyze student data and click on the button to generate the master spreadsheet.</li>
-              <li><strong>Spreadsheet Page:</strong> View the processed data in table format after uploading files from the previous page</li>
+              <li><strong>Upload Page:</strong> Select and upload your CSV/Excel files to analyse student data and click on the button to generate the master spreadsheet.</li>
+              <li><strong>Spreadsheet Page:</strong> View the processed data in table format after uploading files from the previous page.</li>
               <li><strong>Report Page:</strong> See detailed analysis and insights about the uploaded student data.</li>
+              <li><strong>Saving sessions:</strong>Not yet implemented but will update this part when done so.</li>
             </ul>
             <button
               onClick={() => setShowHelp(false)}
