@@ -452,9 +452,7 @@ export default function Upload() {
             }}
           >
             <li>
-              <a href="https://github.com/school-projects123/SWE_group8">
-                GitHub Repository
-              </a>
+              <a href="https://github.com/school-projects123/SWE_group8">GitHub Repository</a>
             </li>
             <li>
               <a href="https://example.com/">Example</a>
