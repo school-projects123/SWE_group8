@@ -17,7 +17,7 @@ app = Flask(__name__, static_folder = "../static", template_folder="../templates
 #to allow for cross platform communication (flask and vite are on diff [ports for development] doesnt make a diffrence in production)
 CORS(app)
 
-# these are the react serving routes
+# these are the React serving routes
 # Serve the React homepage
 
 # need to add a message that sends to front end if there are file issues , rn it just says that the files were uploaded
