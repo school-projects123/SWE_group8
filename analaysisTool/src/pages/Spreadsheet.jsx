@@ -74,11 +74,36 @@ export default function Spreadsheet() {
     return <p>Loading master spreadsheet...</p>;
   }
 
+  const handleDownload = async () => {
+    try {
+      const res = await fetch("/master/download", {
+        credentials: "include",
+      });
+      
+      if (!res.ok) {
+        alert("Failed to download spreadsheet");
+        return;
+      }
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "master_spreadsheet.csv";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Could not download the spreadsheet");
+    }
+  };
+
   if (error) {
     return <p style={{ color: "red" }}>{error}</p>;
   }
 
-  // ✅ Friendly “no data yet” message (instead of scary JSON error)
   if (!columns.length || !rows.length) {
     return (
       <div style={{ textAlign: "center", marginTop: "40px" }}>
@@ -105,10 +130,36 @@ export default function Spreadsheet() {
 
   return (
     <div>
-      <h1>Master Spreadsheet</h1>
-      <div style={{ overflowX: "auto", maxHeight: "70vh", overflowY: "auto" }}>
-        <button style={{ marginBottom: "10px" }}>Download</button>
 
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "space-between",
+        marginBottom: "1rem", 
+        marginLeft: "1rem",
+      }}>
+      <h1>Master Spreadsheet</h1>
+            <button 
+        onClick={handleDownload}
+        style={{
+          marginBottom: "1rem",
+          marginTop: "2rem",
+          marginRight: "40rem",
+          padding: "0.5rem 1rem",
+          backgroundColor: "#4CAF50",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "1rem"
+        }}
+        onMouseOver={(e) => e.target.style.backgroundColor = "#45a049"}
+        onMouseOut={(e) => e.target.style.backgroundColor = "#4CAF50"}
+      >
+        Download Master Spreadsheet
+      </button>
+      </div>
+      <div style={{ overflowX: "auto", maxHeight: "70vh", overflowY: "auto" }}>
         <table border="1" cellPadding="4">
           <thead>
             <tr>

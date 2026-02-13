@@ -1,5 +1,5 @@
 # need to change to snake case
-from flask import Flask, request, jsonify, send_from_directory, render_template # flask for getting file info from front end (upload page)
+from flask import Flask, request, jsonify, send_from_directory, render_template,  make_response # flask for getting file info from front end (upload page)
 from flask_cors import CORS
 import io # for file reading
 import os
@@ -183,8 +183,6 @@ def get_all_courses(info:dict):
 # likely received via a POST from frontend that sends a json that can be read as a python dict /process with be the frontend command that sends the files to be processed once the gen report button is clicked
 
 
-
-
 # function to process input from react frontend
 
     # store latest master spreadsheet in memory so Spreadsheet page can fetch it
@@ -257,6 +255,20 @@ def get_master():
         "masterColumns": last_master_columns,
         "masterRows": last_master_rows
     })
+
+#endpoint to download master spreadsheet
+@app.route("/master/download", methods = ["GET"])
+def download_master():
+    if not last_master_columns or not last_master_rows:
+        return jsonify({"error": "No master spreadsheet available for download."}), 400
+    
+    master_df = pd.DataFrame(last_master_rows, columns=last_master_columns)
+    csv_data = master_df.to_csv(index=False, encoding="utf-8-sig")
+    response = make_response(csv_data)
+    response.headers["Content-Disposition"] = "attachment; filename=master_spreadsheet.csv"
+    response.headers["Content-Type"] = "text/csv"
+    
+    return response
 
 # Serve React assets + handle client-side routing should add
 @app.route("/", defaults={"path": ""})

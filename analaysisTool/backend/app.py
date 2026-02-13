@@ -174,7 +174,6 @@ def get_master():
         "masterRows": data["masterRows"]
     })
 
-
 # Serve frontend (Flask version)
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
