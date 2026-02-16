@@ -18,11 +18,7 @@ export default function Upload() {
   ]; // the columns of the data, these fields must be identical to the json for the data to show correctly
 
   function loadChartJs(callback) {
-    if (
-      document.querySelector(
-        'script[src="https://cdn.jsdelivr.net/npm/chart.js"]',
-      )
-    )
+    if (document.querySelector( 'script[src="https://cdn.jsdelivr.net/npm/chart.js"]' ))
       return callback();
     const script = document.createElement("script");
     script.src = "https://cdn.jsdelivr.net/npm/chart.js";
@@ -39,8 +35,7 @@ export default function Upload() {
     });
   }
 
-  async function loadData() {
-    // fetch processed JSON data from the backend
+  async function loadData() { // fetch processed JSON data from the backend
     try {
       const res = await fetch("/master");
       if (!res.ok)
@@ -57,8 +52,7 @@ export default function Upload() {
     }
   }
 
-  function renderBarChart(data) {
-    // bar chart of user scores
+  function renderBarChart(data) { // bar chart of user scores
     const chartDiv =
       document.getElementById("chartDiv") ||
       Object.assign(document.body.appendChild(document.createElement("div")), {
@@ -116,8 +110,7 @@ export default function Upload() {
     );
   }
 
-  function plotEssayVsExamFromTable(data) {
-    // essay vs exam score scatter plot
+  function plotEssayVsExamFromTable(data) { // essay vs exam score scatter plot
     const points = data
       .map((u) => {
         const wordNum = parseFloat(u["Essay Score (Raw)"] || "");
@@ -154,8 +147,7 @@ export default function Upload() {
     canvas.style.height = "320px"; // visual height
     container.appendChild(canvas);
 
-    if (!points.length) {
-      // no (valid) data
+    if (!points.length) { // no (valid) data
       scatterDiv.appendChild(
         document.createTextNode(
           "No valid data for essay vs exam score scatter plot.",
@@ -204,8 +196,7 @@ export default function Upload() {
     );
   }
 
-  const renderTableJSX = () => (
-    // data table
+  const renderTableJSX = () => ( // data table
     <table
       border="1"
       style={{
@@ -238,15 +229,13 @@ export default function Upload() {
     </table>
   );
 
-  useEffect(() => {
-    // Initial load
+  useEffect(() => { // Initial load
     loadData();
     loadChartJs(() => {}); // for some reason the scatter plot doesn't load without this call
   }, []);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  useEffect(() => {
-    // ensure selectedIndex is valid when jsonData changes
+  useEffect(() => { // ensure selectedIndex is valid when jsonData changes
     if (!jsonData || !jsonData.length) {
       setSelectedIndex(0);
       return;
@@ -258,6 +247,11 @@ export default function Upload() {
     const name = `${u["First Name"] || ""} ${u["Last Name"] || ""}`.trim();
     return name || `Student ${i + 1}`;
   });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredStudents = studentNames
+    .map((name, index) => ({ name, index }))
+    .filter(({ name }) => name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div
@@ -281,35 +275,12 @@ export default function Upload() {
         }}
       >
         <p>
-          Welcome to the Report Page. View student analytics here after
-          uploading your files.
+          Welcome to the Report Page. View student analytics here after uploading your files.
         </p>
       </div>
-      <div
-        className="display"
-        style={{
-          height: "100%",
-          flex: 1,
-          backgroundColor: "lightblue",
-          maxWidth: "100%",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            height: "100%",
-            boxSizing: "border-box",
-          }}
-        >
-          <div
-            style={{
-              width: "20%",
-              backgroundColor: "#19306a",
-              padding: "10px",
-              color: "#000",
-            }}
-          >
+      <div className="display" style={{ height: "100%", flex: 1, backgroundColor: "lightblue", maxWidth: "100%" }}>
+        <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
+          <div style={{ width: "20%", backgroundColor: "#19306a", padding: "10px", color: "#000" }}>
             <h2 style={{ color: "white" }}>Report Page - Data Analytics</h2>
 
             <p style={{ color: "white" }}>
@@ -317,16 +288,19 @@ export default function Upload() {
             </p>
 
             <div className="studentList">
-              {" "}
-              {/* dropdown select for student list */}
-              <label
-                htmlFor="studentSelect"
-                style={{
-                  color: "#fffdfdff",
-                  display: "block",
-                  marginBottom: 8,
-                }}
-              >
+              <label htmlFor="studentSearch" style={{ color: "#fffdfdff", display: "block", marginBottom: 8 }}>
+                Student Search
+              </label>
+              <input
+                id="studentSearch"
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ width: "100%", padding: "6px", borderRadius: 4, marginBottom: 12 }}
+              />
+
+              <label htmlFor="studentSelect" style={{ color: "#fffdfdff", display: "block", marginBottom: 8 }}>
                 Students
               </label>
               <select
@@ -335,14 +309,14 @@ export default function Upload() {
                 onChange={(e) => setSelectedIndex(parseInt(e.target.value, 10))}
                 style={{ width: "100%", padding: "6px", borderRadius: 4 }}
               >
-                {studentNames.length === 0 ? (
+                {filteredStudents.length === 0 ? (
                   <option value={0} disabled>
-                    No students loaded
+                    No students found
                   </option>
                 ) : (
-                  studentNames.map((n, i) => (
-                    <option key={i} value={i}>
-                      {n}
+                  filteredStudents.map(({ name, index }) => (
+                    <option key={index} value={index}>
+                      {name}
                     </option>
                   ))
                 )}
@@ -350,14 +324,7 @@ export default function Upload() {
             </div>
           </div>
           <div style={{ width: "100%", backgroundColor: "lightyellow" }}>
-            <div
-              style={{
-                display: "flex",
-                width: "100%",
-                height: "100%",
-                boxSizing: "border-box",
-              }}
-            >
+            <div style={{ display: "flex", width: "100%", height: "100%", boxSizing: "border-box" }}>
               <div
                 style={{
                   width: "20%",
@@ -370,17 +337,12 @@ export default function Upload() {
                 <h2 style={{ margin: 0, color: "#000" }}>Student View</h2>
                 <p>Here you can see the details for the selected student.</p>
 
-                {/* table flipping, every field is displayed?*/}
                 <div className="studentDetails">
                   {jsonData.length === 0 ? (
                     <div>No student data loaded yet.</div>
                   ) : (
                     <table
-                      style={{
-                        width: "100%",
-                        borderCollapse: "collapse",
-                        fontSize: 12,
-                      }}
+                      style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}
                     >
                       <tbody>
                         {FIELDS.map((field) => (
@@ -418,15 +380,7 @@ export default function Upload() {
                   )}
                 </div>
               </div>
-              <div
-                style={{
-                  width: "80%",
-                  backgroundColor: "#ffffff",
-                  padding: "20px",
-                  boxSizing: "border-box",
-                  color: "#000",
-                }}
-              >
+              <div style={{ width: "80%", backgroundColor: "#ffffff", padding: "20px", boxSizing: "border-box", color: "#000" }}>
                 <h2>Actual Charts:</h2>
                 <div id="chartDiv"></div>
                 <div id="userDiv">{renderTableJSX()}</div>
@@ -436,10 +390,7 @@ export default function Upload() {
           </div>
         </div>
       </div>
-      <div
-        id="bottomBar"
-        style={{ display: "flex", width: "100%", backgroundColor: "lightgray" }}
-      >
+      <div id="bottomBar" style={{ display: "flex", width: "100%", backgroundColor: "lightgray" }}>
         <div style={{ flex: 1, textAlign: "center" }}>
           <ul
             style={{
@@ -451,12 +402,8 @@ export default function Upload() {
               gap: "20px",
             }}
           >
-            <li>
-              <a href="https://github.com/school-projects123/SWE_group8">GitHub Repository</a>
-            </li>
-            <li>
-              <a href="https://example.com/">Example</a>
-            </li>
+            <li><a href="https://github.com/school-projects123/SWE_group8">GitHub Repository</a></li>
+            <li><a href="https://example.com/">Example</a></li>
           </ul>
           <div style={{ marginTop: "8px", fontSize: "0.9em", color: "#333" }}>
             All rights reserved. By who, I do not know.

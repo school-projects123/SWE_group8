@@ -19,7 +19,7 @@ CMD:
 Run the backend then the frontend
 flask/python - runing backend:
     ensure all installs in requirements.txt are installed
-    cd to analaysisTool/backend/file_processing
+    cd to analaysisTool/backend
     python processing_excel.py
 
 vite/react - running frontend:
@@ -33,11 +33,13 @@ Run the following command (may also need to seperately pip install pandas,flask_
 
 > python3 -m pip install -r analaysisTool/requirements.txt
 
-Use the following command to run the app:
+Use the following commands to run the app:
 
 > cd analaysisTool && npm run dev
 
-If that gives permission error, use this to reset the folder owner and try again:
+> python3 analaysisTool/backend/processing_excel.py
+
+If the former gives a permission error, use this to reset the folder owner and try again:
 
 > sudo chown -R $(whoami) .
 

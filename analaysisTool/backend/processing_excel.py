@@ -1,20 +1,20 @@
-# need to change to snake case
+# need to change to snake_case
 from flask import Flask, request, jsonify, send_from_directory, render_template,  make_response # flask for getting file info from front end (upload page)
 from flask_cors import CORS
 import io # for file reading
 import os
-import pandas as pd # for mock retriving the post until that is set up in frontend
+import pandas as pd # for mock retrieving the post until that is set up in front-end
 # these are for converting dict info to pandas dataframe:
 import re
 from html import unescape
 
-from .compile_tool import detect_gradebook, detect_analytics, build_master_dataframe
+from .compile_tool import detect_gradebook, detect_analytics, build_master_dataframe # for me this doesn't work unless the dot is removed... - n.a.
 
 # constants/ compiled regex
 re_tag = re.compile(r"<.*?>")
 
 app = Flask(__name__, static_folder = "../static", template_folder="../templates")
-#to allow for cross platform communication (flask and vite are on diff [ports for development] doesnt make a diffrence in production)
+# to allow for cross-platform communication (flask and vite are on diff [ports for development] doesnt make a diffrence in production)
 CORS(app)
 
 # these are the React serving routes
